@@ -341,7 +341,7 @@
                       <td style="text-align:right;font-size: 8pt"><?php echo gantitides($sqljual['hrg_jual']); ?></td>
                       <td style="text-align:right;font-size: 8pt"><?php echo gantitides($diskon); ?></td>
                       <td style="text-align:right;font-size: 8pt"><?php echo gantitides(round($xdivo,0)); ?></td>
-                      <td style="text-align:center;font-size: 8pt"><?php echo $sqljual['qty_brg'].' '.$sqljual['nm_sat1'] ?></td>
+                      <td style="text-align:center;font-size: 8pt"><?php echo $sqljual['qty_brg'] ?></td>
                       <td style="text-align:right;font-size: 8pt;"><?php echo gantitides($jumlah); ?>&nbsp;</td>
                       <td style="text-align:right;font-size: 8pt;"><?php echo gantitides($dp); ?>&nbsp;</td>   
                       <td style="text-align:center;font-size: 8pt"><?php echo $sqljual['kd_bayar'].$trfk; ?></td>
