@@ -940,7 +940,7 @@
                 }
 
                 // Konversi poin ke rupiah: 1 poin = Rp 100
-                var nilai_poin = poin_redeem * 100;
+                var nilai_poin = poin_redeem * 0;
                 document.getElementById('poin_redeem_hidden').value = nilai_poin;
 
                 hitdisc();
@@ -1168,7 +1168,8 @@
               </div>
             </div>
             <input type="hidden" id="poin_redeem_hidden" name="poin_redeem_hidden" value="0">
-            <div class="hint">1 poin = Rp 100 (maks sesuai poin yang dimiliki)</div>
+            <!-- <div class="hint">1 poin = Rp 100 (maks sesuai poin yang dimiliki)</div> -->
+            <div class="hint">Klaim Voucher dengan Tukar 10 Poin</div>
 
             <div class="money-row">
               <label for="disc_member"><i class="fa fa-user" style="color:purple"></i>&nbsp;<b>Diskon Member</b></label>

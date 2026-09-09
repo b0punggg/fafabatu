@@ -81,8 +81,8 @@ header("Pragma: no-cache");
 header("Expires: 0");
 
 echo "<table border='1'>";
-echo "<tr><th colspan='8' style='font-size:14pt;'>Data Member</th></tr>";
-echo "<tr><th colspan='8' style='text-align:left;'>Filter nama member: ".htmlspecialchars($keyword === '' ? 'Semua' : $keyword)."</th></tr>";
+echo "<tr><th colspan='7' style='font-size:14pt;'>Data Member</th></tr>";
+echo "<tr><th colspan='7' style='text-align:left;'>Filter nama member: ".htmlspecialchars($keyword === '' ? 'Semua' : $keyword)."</th></tr>";
 echo "<tr style='background:#f2f2f2;font-weight:bold;'>
   <th>No.</th>
   <th>ID Member</th>
@@ -91,7 +91,6 @@ echo "<tr style='background:#f2f2f2;font-weight:bold;'>
   <th>Alamat</th>
   <th>No. Telp/HP</th>
   <th>Tgl Daftar</th>
-  <th>Poin</th>
 </tr>";
 
 $no = 1;
@@ -104,7 +103,6 @@ while($data = mysqli_fetch_assoc($q)){
   if(isset($data['tgl_daftar']) && $data['tgl_daftar'] !== '' && $data['tgl_daftar'] !== '0000-00-00'){
     $tgl_daftar = date('d-m-Y', strtotime($data['tgl_daftar']));
   }
-  $poin = isset($data['poin']) ? floatval($data['poin']) : 0;
   echo "<tr>
     <td align='right'>".$no."</td>
     <td>".htmlspecialchars(isset($data['kd_member']) ? $data['kd_member'] : '')."</td>
@@ -113,13 +111,12 @@ while($data = mysqli_fetch_assoc($q)){
     <td>".htmlspecialchars(isset($data['al_member']) ? $data['al_member'] : '')."</td>
     <td>".htmlspecialchars(isset($data['no_telp']) ? $data['no_telp'] : '')."</td>
     <td align='center'>".$tgl_daftar."</td>
-    <td align='right'>".number_format($poin, 0, ',', '.')."</td>
   </tr>";
   $no++;
 }
 
 if($no === 1){
-  echo "<tr><td colspan='8' align='center'>Tidak ada data member.</td></tr>";
+  echo "<tr><td colspan='7' align='center'>Tidak ada data member.</td></tr>";
 }
 
 echo "</table>";

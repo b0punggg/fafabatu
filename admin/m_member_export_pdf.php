@@ -105,7 +105,6 @@ if(!$q){
         <th>Alamat</th>
         <th style="width:12%;">No. Telp/HP</th>
         <th style="width:10%;">Tgl Daftar</th>
-        <th style="width:8%;">Poin</th>
       </tr>
     </thead>
     <tbody>
@@ -120,7 +119,6 @@ if(!$q){
         if(isset($data['tgl_daftar']) && $data['tgl_daftar'] !== '' && $data['tgl_daftar'] !== '0000-00-00'){
           $tgl_daftar = date('d-m-Y', strtotime($data['tgl_daftar']));
         }
-        $poin = isset($data['poin']) ? floatval($data['poin']) : 0;
       ?>
       <tr>
         <td class="right"><?php echo $no; ?></td>
@@ -130,7 +128,6 @@ if(!$q){
         <td><?php echo htmlspecialchars(isset($data['al_member']) ? $data['al_member'] : ''); ?></td>
         <td><?php echo htmlspecialchars(isset($data['no_telp']) ? $data['no_telp'] : ''); ?></td>
         <td class="center"><?php echo $tgl_daftar; ?></td>
-        <td class="right"><?php echo number_format($poin, 0, ',', '.'); ?></td>
       </tr>
       <?php
         $no++;
@@ -138,7 +135,7 @@ if(!$q){
       if($no === 1){
       ?>
       <tr>
-        <td colspan="8" class="center">Tidak ada data member.</td>
+        <td colspan="7" class="center">Tidak ada data member.</td>
       </tr>
       <?php } ?>
     </tbody>

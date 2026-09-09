@@ -78,6 +78,47 @@
 		  });
 	    }
 
+    function detailMember(kd_member){
+      var existing = document.getElementById('modal-detail-member');
+      if(existing && existing.parentNode){
+        existing.parentNode.removeChild(existing);
+      }
+      $.ajax({
+        url: 'm_member_poin_detail.php',
+        type: 'POST',
+        data: { kd_member: kd_member },
+        dataType: 'json',
+        success: function(res){
+          if(!res || !res.success){
+            popnew_error((res && res.pesan) ? res.pesan : 'Gagal memuat detail poin');
+            return;
+          }
+          var modal = document.createElement('div');
+          modal.id = 'modal-detail-member';
+          modal.className = 'w3-modal';
+          modal.style.display = 'block';
+          modal.style.zIndex = '9999';
+          modal.innerHTML = '<div class="w3-modal-content w3-card-4" style="max-width: 820px; margin: 40px auto;">' +
+            '<header class="w3-container w3-blue">' +
+            '<span onclick="var m=document.getElementById(\'modal-detail-member\'); if(m){ m.style.display=\'none\'; m.parentNode.removeChild(m);} " class="w3-button w3-display-topright" style="cursor:pointer;">&times;</span>' +
+            '<h3><i class="fa fa-star"></i> Detail Poin Member</h3>' +
+            '</header>' +
+            '<div class="w3-container">' + res.hasil + '</div>' +
+            '</div>';
+          document.body.appendChild(modal);
+          modal.onclick = function(e){
+            if(e.target === modal){
+              modal.style.display = 'none';
+              if(modal.parentNode){ modal.parentNode.removeChild(modal); }
+            }
+          };
+        },
+        error: function(){
+          popnew_error('Gagal memuat detail poin');
+        }
+      });
+    }
+
     function updateExportMemberLinks(){
       var keyword = document.getElementById('keyktmember') ? document.getElementById('keyktmember').value : '';
       var sort = document.getElementById('sort_member') ? document.getElementById('sort_member').value : 'abjad';

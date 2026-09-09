@@ -32,8 +32,7 @@
 	      <th width="30%">ALAMAT</th>
 	      <th width="10%">NO. TELP/HP</th>
 	      <th width="10%">TGL DAFTAR</th>
-	      <th width="10%">POIN</th>
-	      <th colspan="2" width="10%">OPSI</th>
+	      <th colspan="3" width="12%">OPSI</th>
 	    </tr>
 	    <?php
 	    include "config.php";
@@ -56,7 +55,7 @@
       $get_jumlah = array('jumlah' => 0);
 
       if(!$connect){
-        echo '<tr><td colspan="9" align="center">Koneksi database gagal</td></tr>';
+        echo '<tr><td colspan="10" align="center">Koneksi database gagal</td></tr>';
       } else {
         $kolom = array();
         $cek_kolom = mysqli_query($connect, "SHOW COLUMNS FROM member");
@@ -144,11 +143,9 @@
 	            echo '-';
 	          }
 	        ?></td>
-	        <td align="right" style="font-weight: bold; color: #ff6b00;">
-	          <?php 
-	          $poin_member = isset($data['poin']) ? floatval($data['poin']) : 0;
-	          echo number_format($poin_member, 0, ',', '.');
-	          ?>
+	        <td>
+	           <?php $kd_member_js = mysqli_escape_string($connect, $data['kd_member']); ?>
+	           <button type="button" onclick="detailMember('<?=$kd_member_js?>')" class="btn-info fa fa-eye" style="cursor: pointer; border-style:none;font-size: 12pt" title="Detail poin"></button>
 	        </td>
 	        <td>
 	          	<button onclick="document.getElementById('kd_member').value='<?=mysqli_escape_string($connect,$data['kd_member']) ?>';
@@ -172,7 +169,7 @@
       if($connect && !$sql){
         ?>
         <tr>
-          <td colspan="9" align="center">Query member gagal: <?php echo htmlspecialchars(mysqli_error($connect)); ?></td>
+          <td colspan="10" align="center">Query member gagal: <?php echo htmlspecialchars(mysqli_error($connect)); ?></td>
         </tr>
         <?php
       }
