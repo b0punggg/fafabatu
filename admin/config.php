@@ -1,47 +1,32 @@
 
 <?php 
   date_default_timezone_set('Asia/Jakarta');
+if (!function_exists('opendtcek')) {
   function opendtcek()
   {
-    $host    = "localhost";
-    $username = "u219974054_defafa";
-    $password = "k8F!+0EYQgSG";
-    $database = "u219974054_tokofafa";
+    // $host = "localhost";
+    // $username = "ADMIN1";
+    // $password = "$2y$10$5xiK8zoUiV38wsNe43Z9guuQ7SUW5wT.WQVeadyPdV/cQsM7HjQH."; 
+    // $database = "tokorahayu";
     
-    return mysqli_connect($host,$username,$password,$database);
+    return mysqli_connect('localhost','root','','fafa');
   }
-//function opendtcek()
-//{
-  // $host = "localhost";
-  // $username = "ADMIN1";
-  // $password = "$2y$10$5xiK8zoUiV38wsNe43Z9guuQ7SUW5wT.WQVeadyPdV/cQsM7HjQH."; 
-  // $database = "tokorahayu";
-  
-  // $nmuser='';
-  // $nmuser=$_SESSION['nm_user'];
- 
-  //***cari user pada pemakai
-  // $con=mysqli_connect($host,$username,$password,$database);
-  // $sql=mysqli_query($con,"SELECT * FROM pemakai WHERE nm_user='$nmuser' ORDER BY nm_user ASC");
-   
-  //  if (mysqli_num_rows($sql)>=1){
-  //    $data=mysqli_fetch_assoc($sql); 
-  //    $username = $data['nm_user'];
-  //    $password = $data['pass'];
-  //    if ($username=="ADMIN1"){
-  //     $username="root";
-  //     $password="";
-  //    }
-  //  } else {
-  //    $username = "root";
-  //    $password = "";
-  //  }
-  // unset($data,$sql); 
-  // mysqli_close($con); 
+}
 
-  return mysqli_connect('localhost','root','','fafa');
-//}
+if (!function_exists('nm_bln')) {
+  function nm_bln($bln)
+  {
+    $nama = array(
+      '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+    );
+    $i = (int) $bln;
+    return isset($nama[$i]) ? $nama[$i] : (string) $bln;
+  }
+}
 
+// Pastikan fungsi kd_barc39() tidak dideklarasikan dua kali
+if (!function_exists('kd_barc39')) {
 function kd_barc39($strkon){ 
   $a=array("A"=>"1","B"=>"2","C"=>"3","D"=>"4","E"=>"5",
            "F"=>"6","G"=>"7","H"=>"8","I"=>"9","J"=>"0",
@@ -101,7 +86,10 @@ function kd_barc39($strkon){
     return $kdbar1.$dat;
   }
 }
+}
 
+// Pastikan fungsi createDb() tidak dideklarasikan dua kali
+if (!function_exists('createDb')) {
 function createDb($cpanel_theme, $cPanelUser, $cPanelPass, $dbName)
 {
     $buildRequest = "/frontend/" . $cpanel_theme . "/sql/addb.html?db=" . $dbName;
@@ -126,32 +114,17 @@ function createDb($cpanel_theme, $cPanelUser, $cPanelPass, $dbName)
     }
     fclose($openSocket);
 }
-
-function createUser($cpanel_theme, $cPanelUser, $cPanelPass, $userName, $userPass)
-{
-  //https://srv93.niagahoster.com:2083/cpsess1246347400/frontend/paper_lantern/sql/deluser.html?user=u1031946_user3
-    // https://tb.ngrompakkita.net:2083/cpsess1864538082/frontend/paper_lantern/sql/adduser.html?user=yaz3&pass=yaz3123
-    // $openSocket = fsockopen('localhost', 2083);
-    // if (!$openSocket) {
-    //     return "Socket error";
-    //     exit();
-    // }
-
-    // $authString = $cPanelUser . ":" . $cPanelPass;
-    // $authPass = base64_encode($authString);
-    // $buildHeaders = "GET " . $buildRequest . "\r\n";
-    // $buildHeaders .= "HTTP:1.1\r\n";
-    // $buildHeaders .= "Host:localhost\r\n";
-    // $buildHeaders .= "Authorization: Basic " . $authPass . "\r\n";
-    // $buildHeaders .= "\r\n";
-
-    // fputs($openSocket, $buildHeaders);
-    // while (!feof($openSocket)) {
-    //     fgets($openSocket, 128);
-    // }
-    // fclose($openSocket);
 }
 
+// Pastikan fungsi createUser() tidak dideklarasikan dua kali
+if (!function_exists('createUser')) {
+function createUser($cpanel_theme, $cPanelUser, $cPanelPass, $userName, $userPass)
+{
+}
+}
+
+// Pastikan fungsi addUserToDb() tidak dideklarasikan dua kali
+if (!function_exists('addUserToDb')) {
 function addUserToDb($cpanel_theme, $cPanelUser, $cPanelPass, $userName, $dbName, $privileges)
 {
     $buildRequest = "/cpsess1246347400/frontend/" . $cpanel_theme . "/sql/addusertodb.html?user=" . $cPanelUser . "_" . $userName . "&db=" . $cPanelUser . "_" . $dbName . "&privileges=" . $privileges;
@@ -176,14 +149,20 @@ function addUserToDb($cpanel_theme, $cPanelUser, $cPanelPass, $userName, $dbName
     }
     fclose($openSocket);
 }
+}
 
+// Pastikan fungsi tglingat() tidak dideklarasikan dua kali
+if (!function_exists('tglingat')) {
 function tglingat($tanggal,$hr){
   $date=date_create($tanggal);
   $hrs=$hr.' days';
   date_add($date,date_interval_create_from_date_string($hrs));
   return date_format($date,"Y-m-d");
 }
+}
 
+// Pastikan fungsi konjumbrg() tidak dideklarasikan dua kali
+if (!function_exists('konjumbrg')) {
 function konjumbrg($sat_brg,$kd_brg){
     $connect3 = opendtcek(1);
     $kd_toko=$_SESSION['id_toko'];
@@ -203,7 +182,10 @@ function konjumbrg($sat_brg,$kd_brg){
     mysqli_close($connect3);
     return $jml_brg_sat;
   }
+}
 
+// Pastikan fungsi konjumbrg2() tidak dideklarasikan dua kali
+if (!function_exists('konjumbrg2')) {
 function konjumbrg2($sat_brg,$kd_brg,$hub){
     //$connect3 = opendtcek(1);
     $kd_toko=$_SESSION['id_toko'];
@@ -219,13 +201,15 @@ function konjumbrg2($sat_brg,$kd_brg,$hub){
     if($sat_brg==$cek['kd_kem1']){
       $jml_brg_sat=$cek['jum_kem1'];
     }
-    if ($cek['kd_kem1']==''){echo $kd_brg;}
     unset($datsql,$cek);
 
     //mysqli_close($connect3);
     return $jml_brg_sat;
-  }  
+  }
+}
 
+// Pastikan fungsi konhrgbelibrg() tidak dideklarasikan dua kali
+if (!function_exists('konhrgbelibrg')) {
 function konhrgbelibrg($sat_brg, $kd_brg, $no_urutbeli) {
     $connect3 = opendtcek();
 
@@ -252,8 +236,30 @@ function konhrgbelibrg($sat_brg, $kd_brg, $no_urutbeli) {
 
     mysqli_close($connect3);
     return $hrg_beli;
-}  
-  
+}
+}
+
+// Stok satuan terbesar (kem1) dari stok satuan terkecil
+if (!function_exists('stok_satuan_terbesar')) {
+  function stok_satuan_terbesar($stok_juals, $jum_kem1) {
+    $stok = floatval($stok_juals);
+    $faktor = floatval($jum_kem1);
+    if ($faktor <= 0) {
+      $faktor = 1;
+    }
+    return $stok / $faktor;
+  }
+}
+
+// Nilai persediaan = stok satuan terbesar × harga beli (per satuan besar)
+if (!function_exists('nilai_persediaan_stok_besar')) {
+  function nilai_persediaan_stok_besar($stok_juals, $hrg_beli, $jum_kem1) {
+    return stok_satuan_terbesar($stok_juals, $jum_kem1) * floatval($hrg_beli);
+  }
+}
+
+// Pastikan fungsi carisatkecil() tidak dideklarasikan dua kali
+if (!function_exists('carisatkecil')) {
   function carisatkecil($kd_brg){
     $connect4 = opendtcek();
     $kd_toko=$_SESSION['id_toko'];
@@ -273,7 +279,10 @@ function konhrgbelibrg($sat_brg, $kd_brg, $no_urutbeli) {
     mysqli_close($connect4);
     return $satkecil;
   }
-  
+}
+
+// Pastikan fungsi carisatkecil2() tidak dideklarasikan dua kali
+if (!function_exists('carisatkecil2')) {
   function carisatkecil2($kd_brg,$hub){
     $kd_toko=$_SESSION['id_toko'];
     $datsql=mysqli_query($hub,"SELECT * from mas_brg where kd_brg='$kd_brg' AND kd_toko='$kd_toko'");
@@ -294,7 +303,10 @@ function konhrgbelibrg($sat_brg, $kd_brg, $no_urutbeli) {
     // }
     return $satkecil;
   }
+}
 
+// Pastikan fungsi carisatbesar() tidak dideklarasikan dua kali
+if (!function_exists('carisatbesar')) {
   function carisatbesar($kd_brg){
     $connect4 = opendtcek();
     $kd_toko=$_SESSION['id_toko'];
@@ -308,7 +320,10 @@ function konhrgbelibrg($sat_brg, $kd_brg, $no_urutbeli) {
     mysqli_close($connect4);
     return $satbesar;
   }
+}
 
+// Pastikan fungsi carisatbesar2() tidak dideklarasikan dua kali
+if (!function_exists('carisatbesar2')) {
   function carisatbesar2($kd_brg,$hub){
     //$connect4 = opendtcek();
     $kd_toko=$_SESSION['id_toko'];
@@ -322,7 +337,10 @@ function konhrgbelibrg($sat_brg, $kd_brg, $no_urutbeli) {
     //mysqli_close($connect4);
     return $satbesar;
   }
-  
+}
+
+// Pastikan fungsi carisatbesar3() tidak dideklarasikan dua kali
+if (!function_exists('carisatbesar3')) {
   function carisatbesar3($kd_brg,$hub){
     //$connect4 = opendtcek();
     $kd_toko=$_SESSION['id_toko'];
@@ -336,6 +354,10 @@ function konhrgbelibrg($sat_brg, $kd_brg, $no_urutbeli) {
     //mysqli_close($connect4);
     return $satbesar;
   }
+}
+
+// Pastikan fungsi carihrgjual() tidak dideklarasikan dua kali
+if (!function_exists('carihrgjual')) {
 function carihrgjual($kd_brg,$kd_sat){
   $connect4 = opendtcek();
   $kd_toko=$_SESSION['id_toko'];
@@ -355,7 +377,10 @@ function carihrgjual($kd_brg,$kd_sat){
   mysqli_close($connect4);
   return $hrg;
 }
+}
 
+// Pastikan fungsi caristokmas() tidak dideklarasikan dua kali
+if (!function_exists('caristokmas')) {
 function caristokmas($kd_brg)
 {
   $concari = opendtcek();
@@ -367,7 +392,10 @@ function caristokmas($kd_brg)
   //echo '$stok='.$stok;
   return $stok;
 }
+}
 
+// Pastikan fungsi caristok() tidak dideklarasikan dua kali
+if (!function_exists('caristok')) {
 function caristok($kd_brg,$hub)
 {
   $kd_toko=$_SESSION['id_toko'];
@@ -377,7 +405,10 @@ function caristok($kd_brg,$hub)
   unset($jml);mysqli_free_result($cek);
   return $stok;
 }
+}
 
+// Pastikan fungsi caristokbeli() tidak dideklarasikan dua kali
+if (!function_exists('caristokbeli')) {
 function caristokbeli($no_urut,$kd_brg)
 {
   $concari = opendtcek();
@@ -388,7 +419,10 @@ function caristokbeli($no_urut,$kd_brg)
   mysqli_close($concari);
   return $stok;
 }
+}
 
+// Pastikan fungsi ceknmkem() tidak dideklarasikan dua kali
+if (!function_exists('ceknmkem')) {
 function ceknmkem($field,$hub){
     //$connect2 = opendtcek();
     if(!$hub || !is_object($hub)) {
@@ -407,7 +441,10 @@ function ceknmkem($field,$hub){
     //mysqli_close($connect2);
     return $nama;
 }
+}
 
+// Pastikan fungsi ceknmkem2() tidak dideklarasikan dua kali
+if (!function_exists('ceknmkem2')) {
 function ceknmkem2($field,$hub){
     //$connect2 = opendtcek(1);
     if(!$hub || !is_object($hub)) {
@@ -426,7 +463,10 @@ function ceknmkem2($field,$hub){
     //mysqli_close($connect2);
     return $nama;
 }
+}
 
+// Pastikan fungsi cekdisc() tidak dideklarasikan dua kali
+if (!function_exists('cekdisc')) {
 function cekdisc($kd_brg,$kd_sat,$concek){
   // $cekcon=opendtcek();
   $cek=mysqli_query($concek,"SELECT * FROM disctetap WHERE kd_brg='$kd_brg' AND kd_sat='$kd_sat' ORDER BY no_urut");
@@ -437,7 +477,10 @@ function cekdisc($kd_brg,$kd_sat,$concek){
   return $hasil;
   //mysqli_close($cekcon);
 }
+}
 
+// Pastikan fungsi adadisc() tidak dideklarasikan dua kali
+if (!function_exists('adadisc')) {
 function adadisc($kd_brg){
   $cekada=opendtcek();
   $cek=mysqli_query($cekada,"SELECT * FROM disctetap WHERE kd_brg='$kd_brg'");
@@ -449,7 +492,10 @@ function adadisc($kd_brg){
   unset($cek);
   mysqli_close($cekada);
 }
+}
 
+// Pastikan fungsi cekdiscpromo() tidak dideklarasikan dua kali
+if (!function_exists('cekdiscpromo')) {
 function cekdiscpromo($kd_brg, $tgl_jual, $concek){
   // Cek apakah ada promo discount aktif untuk barang ini
   $kd_toko = $_SESSION['id_toko'];
@@ -476,7 +522,10 @@ function cekdiscpromo($kd_brg, $tgl_jual, $concek){
   
   return false;
 }
+}
 
+// Pastikan fungsi applydiscpromo() tidak dideklarasikan dua kali
+if (!function_exists('applydiscpromo')) {
 function applydiscpromo($hrg_jual, $kd_brg, $tgl_jual, $concek){
   // Apply discount promo ke harga
   $disc_promo = cekdiscpromo($kd_brg, $tgl_jual, $concek);
@@ -503,7 +552,10 @@ function applydiscpromo($hrg_jual, $kd_brg, $tgl_jual, $concek){
   
   return $hrg_jual;
 }
+}
 
+// Pastikan fungsi getdiscpromoitem() tidak dideklarasikan dua kali
+if (!function_exists('getdiscpromoitem')) {
 function getdiscpromoitem($kd_brg, $tgl_jual, $concek){
   // Get discount item (rupiah) dari promo untuk digunakan sebagai discitem
   $disc_promo = cekdiscpromo($kd_brg, $tgl_jual, $concek);
@@ -527,7 +579,10 @@ function getdiscpromoitem($kd_brg, $tgl_jual, $concek){
   
   return false;
 }
+}
 
+// Pastikan fungsi hapusPromoBerakhir() tidak dideklarasikan dua kali
+if (!function_exists('hapusPromoBerakhir')) {
 function hapusPromoBerakhir($connect, $kd_toko = ''){
   // Fungsi untuk menghapus promo yang periode sudah berakhir (tgl_akhir < tanggal hari ini)
   // Fungsi ini dipanggil otomatis saat halaman dimuat atau saat list promo dimuat
@@ -576,7 +631,10 @@ function hapusPromoBerakhir($connect, $kd_toko = ''){
   
   return $jumlah_dihapus;
 }
+}
 
+// Pastikan fungsi spasicenter() tidak dideklarasikan dua kali
+if (!function_exists('spasicenter')) {
 function spasicenter($str,$pjg)
 {
   $spa="";   
@@ -597,7 +655,10 @@ function spasicenter($str,$pjg)
   }
   return $strjadi;
 }
+}
 
+// Pastikan fungsi spasistr() tidak dideklarasikan dua kali
+if (!function_exists('spasistr')) {
 function spasistr($str,$pjg)
 {
   $spa="";   
@@ -615,7 +676,10 @@ function spasistr($str,$pjg)
     return $strjadi;
   }
 }
+}
 
+// Pastikan fungsi spasinum() tidak dideklarasikan dua kali
+if (!function_exists('spasinum')) {
 function spasinum($str,$pjg)
 {
   $spa="";   
@@ -633,7 +697,10 @@ function spasinum($str,$pjg)
     return $strjadi;
   }
 }
+}
 
+// Pastikan fungsi spasi() tidak dideklarasikan dua kali
+if (!function_exists('spasi')) {
 function spasi($pjg){
   $spa='';
   for ($i=0; $i < $pjg ; $i++) 
@@ -641,8 +708,11 @@ function spasi($pjg){
    $spa=$spa.'&nbsp;';
   }
   return $spa;
-}  
+}
+}
 
+// Pastikan fungsi write_num() tidak dideklarasikan dua kali
+if (!function_exists('write_num')) {
 function write_num($input,$printer,$xpos,$ypos){
   
       $s=strlen($input);
@@ -652,9 +722,11 @@ function write_num($input,$printer,$xpos,$ypos){
           printer_draw_text_custom($printer,substr($input,$u,1),$x,$ypos);
           $x=$x-11;
       }
-  } 
+}
+}
 
- 
+// Pastikan fungsi nm_harini() tidak dideklarasikan dua kali
+if (!function_exists('nm_harini')) {
   function nm_harini($tanggal){
       $hari=date("D",strtotime($tanggal));
       switch ($hari) {
@@ -682,7 +754,10 @@ function write_num($input,$printer,$xpos,$ypos){
       }
       return $hari_ini;
     }
+}
 
+// Pastikan fungsi gantiti() tidak dideklarasikan dua kali
+if (!function_exists('gantiti')) {
   function gantiti($b){
     $_minus = false;
     $c='';
@@ -699,8 +774,11 @@ function write_num($input,$printer,$xpos,$ypos){
       }
     if ($_minus) {$c = "-".$c;} 
       return $c;
-   }  
+   }
+}
 
+// Pastikan fungsi gantitides() tidak dideklarasikan dua kali
+if (!function_exists('gantitides')) {
   function gantitides($b){
     $_minus = false;
     $c='';$x=0;$cek=0;
@@ -741,8 +819,11 @@ function write_num($input,$printer,$xpos,$ypos){
         
       if ($_minus) {$c = "-".$c;} 
       return $c . ",".$des;
-  }  
+  }
+}
 
+// Pastikan fungsi backnumdes() tidak dideklarasikan dua kali
+if (!function_exists('backnumdes')) {
   function backnumdes($x){
     if ($x>0){
       $a=str_replace(".","",$x);
@@ -755,8 +836,10 @@ function write_num($input,$printer,$xpos,$ypos){
     }
     return $b;
   }
+}
 
-
+// Pastikan fungsi backnum() tidak dideklarasikan dua kali
+if (!function_exists('backnum')) {
   function backnum($x){
       $jum=substr_count($x,".");
       $tt=explode(".", $x);
@@ -766,34 +849,30 @@ function write_num($input,$printer,$xpos,$ypos){
       }
       return $jml1;
    }
-
-  // function backnumdes($x){
-  //     $xx=explode(",",$x);
-  //     $des=$xx[1];
-
-  //     $jum=substr_count($xx[0],".");
-  //     $tt=explode(".", $xx[0]);
-  //     $jml1="";
-  //     for($i = 0; $i <= $jum; $i++){
-  //        $jml1=$jml1.$tt[$i];
-  //     }
-  //     return $jml1.','.$des;
-  //  } 
+}
   
+// Pastikan fungsi gantitglsave() tidak dideklarasikan dua kali
+if (!function_exists('gantitglsave')) {
   function gantitglsave($tgl)
     {
       $pecahlan=explode('-', $tgl);
       $x=$pecahlan[0].'-'.$pecahlan[1].'-'.$pecahlan[2];
       return $x;
     }
-    
+}
+
+// Pastikan fungsi gantitgl() tidak dideklarasikan dua kali
+if (!function_exists('gantitgl')) {
   function gantitgl($tgl1)
     {
       $pecah=explode('-', $tgl1);
       $x=$pecah[2].'-'.$pecah[1].'-'.$pecah[0];
       return $x;
-    }  
+    }
+}
 
+// Pastikan fungsi tmzone() tidak dideklarasikan dua kali
+if (!function_exists('tmzone')) {
   function tmzone($tgl){
       date_default_timezone_set('Asia/Jakarta');
       // $pecah=explode('-',$tgl);
@@ -817,6 +896,7 @@ function write_num($input,$printer,$xpos,$ypos){
             return $tgl1;
      }else{return $tgl1;}
   }
+}
 
   // Mengubah datetime menjadi teks "x menit/jam/hari yang lalu"
   if (!function_exists('timeago')) {
@@ -853,6 +933,8 @@ function write_num($input,$printer,$xpos,$ypos){
   }
 
   
+// Pastikan fungsi penyebut() tidak dideklarasikan dua kali
+if (!function_exists('penyebut')) {
   function penyebut($nilai) {
     $nilai = abs($nilai);
     $huruf = array("", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas");
@@ -880,7 +962,10 @@ function write_num($input,$printer,$xpos,$ypos){
     }     
     return $temp;
   }
+}
 
+// Pastikan fungsi penyebutsen() tidak dideklarasikan dua kali
+if (!function_exists('penyebutsen')) {
   function penyebutsen($nilai) {
     $nilai = abs($nilai);
     $huruf = array("", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas");
@@ -891,25 +976,13 @@ function write_num($input,$printer,$xpos,$ypos){
       $temp = penyebutsen($nilai - 10). " Belas";
     } else if ($nilai < 100) {
       $temp = penyebutsen($nilai/10)." Puluh". penyebut($nilai % 10);
-    } 
-    // else if ($nilai < 200) {
-    //   $temp = " Seratus" . penyebut($nilai - 100);
-    // } else if ($nilai < 1000) {
-    //   $temp = penyebutsen($nilai/100) . " Ratus" . penyebut($nilai % 100);
-    // } else if ($nilai < 2000) {
-    //   $temp = " Seribu" . penyebut($nilai - 1000);
-    // } else if ($nilai < 1000000) {
-    //   $temp = penyebutsen($nilai/1000) . " Ribu" . penyebut($nilai % 1000);
-    // } else if ($nilai < 1000000000) {
-    //   $temp = penyebutsen($nilai/1000000) . " Juta" . penyebut($nilai % 1000000);
-    // } else if ($nilai < 1000000000000) {
-    //   $temp = penyebutsen($nilai/1000000000) . " Milyar" . penyebut(fmod($nilai,1000000000));
-    // } else if ($nilai < 1000000000000000) {
-    //   $temp = penyebutsen($nilai/1000000000000) . " Trilyun" . penyebut(fmod($nilai,1000000000000));
-    // }     
+    }  
     return $temp;
   }
+}
 
+// Pastikan fungsi terbilang() tidak dideklarasikan dua kali
+if (!function_exists('terbilang')) {
   function terbilang($xnilai) { 
     if (strpos($xnilai,'.')>0){
       $x=explode('.',$xnilai);
@@ -934,6 +1007,7 @@ function write_num($input,$printer,$xpos,$ypos){
       }
     
   }
- ?>
+}
+?>
 
 
