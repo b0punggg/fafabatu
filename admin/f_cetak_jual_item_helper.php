@@ -27,6 +27,10 @@
         $filter_bayar = " AND dum_jual.kd_bayar='TUNAI' ";
       }elseif($cr_bay == 'TEMPO'){
         $filter_bayar = " AND dum_jual.kd_bayar='TEMPO' ";
+        }elseif($cr_bay == 'COD'){
+        $filter_bayar = " AND dum_jual.kd_bayar='COD' ";
+      }elseif($cr_bay == 'QRIS'){
+        $filter_bayar = " AND dum_jual.kd_bayar='QRIS' ";
       }
 
       // Total penjualan per bagian

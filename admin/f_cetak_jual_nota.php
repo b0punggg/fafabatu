@@ -149,8 +149,32 @@
             LEFT JOIN kemas ON dum_jual.kd_sat=kemas.no_urut
             WHERE retur_jual.tgl_retur>='$tgl1' AND retur_jual.tgl_retur<='$tgl2' AND  retur_jual.kd_toko='$kd_toko' AND dum_jual.kd_bayar='TEMPO' $brand_filter_ret_sql
             ORDER BY retur_jual.no_urutretur ASC ");
+            } else if($cr_bay=="COD") {
+              $ket='COD';$hcol=11;$bcol=2;
+              $cek=mysqli_query($connect,"SELECT * FROM mas_jual LEFT JOIN pelanggan ON mas_jual.kd_pel=pelanggan.kd_pel where mas_jual.kd_toko='$kd_toko' and mas_jual.tgl_jual>='$tgl1' and mas_jual.tgl_jual<='$tgl2' and kd_bayar='COD' $brand_filter_sql ORDER BY mas_jual.no_urut ASC");
+   
+               $sqlret  = mysqli_query($connect,"SELECT * FROM retur_jual 
+               LEFT JOIN dum_jual ON retur_jual.no_urutjual=dum_jual.no_urut 
+               LEFT JOIN mas_jual ON retur_jual.no_fakjual=mas_jual.no_fakjual
+               LEFT JOIN mas_brg ON dum_jual.kd_brg=mas_brg.kd_brg
+               LEFT JOIN pelanggan ON dum_jual.kd_pel=pelanggan.kd_pel 
+               LEFT JOIN kemas ON dum_jual.kd_sat=kemas.no_urut
+               WHERE retur_jual.tgl_retur>='$tgl1' AND retur_jual.tgl_retur<='$tgl2' AND retur_jual.kd_toko='$kd_toko' AND dum_jual.kd_bayar='COD' $brand_filter_ret_sql
+               ORDER BY retur_jual.no_urutretur ASC ");
+             } else if($cr_bay=="QRIS") {
+              $ket='QRIS';$hcol=11;$bcol=2;
+              $cek=mysqli_query($connect,"SELECT * FROM mas_jual LEFT JOIN pelanggan ON mas_jual.kd_pel=pelanggan.kd_pel where mas_jual.kd_toko='$kd_toko' and mas_jual.tgl_jual>='$tgl1' and mas_jual.tgl_jual<='$tgl2' and kd_bayar='QRIS' $brand_filter_sql ORDER BY mas_jual.no_urut ASC");
+   
+               $sqlret  = mysqli_query($connect,"SELECT * FROM retur_jual 
+               LEFT JOIN dum_jual ON retur_jual.no_urutjual=dum_jual.no_urut 
+               LEFT JOIN mas_jual ON retur_jual.no_fakjual=mas_jual.no_fakjual
+               LEFT JOIN mas_brg ON dum_jual.kd_brg=mas_brg.kd_brg
+               LEFT JOIN pelanggan ON dum_jual.kd_pel=pelanggan.kd_pel 
+               LEFT JOIN kemas ON dum_jual.kd_sat=kemas.no_urut
+               WHERE retur_jual.tgl_retur>='$tgl1' AND retur_jual.tgl_retur<='$tgl2' AND retur_jual.kd_toko='$kd_toko' AND dum_jual.kd_bayar='QRIS' $brand_filter_ret_sql
+               ORDER BY retur_jual.no_urutretur ASC ");
           } else {
-           $ket='TUNAI / TEMPO';$hcol=12;$bcol=2;
+           $ket='TUNAI / TEMPO / COD / QRIS';$hcol=12;$bcol=2;
            $cek=mysqli_query($connect,"SELECT mas_jual.tgl_jual,mas_jual.no_fakjual,pelanggan.nm_pel,mas_jual.tot_jual,mas_jual.tot_disc,mas_jual.kd_bayar,mas_jual.saldo_hutang,mas_jual.ket_bayar,mas_jual.trf,mas_jual.bayar_uang,mas_jual.execut FROM mas_jual 
             LEFT JOIN pelanggan pelanggan ON mas_jual.kd_pel=pelanggan.kd_pel 
             WHERE mas_jual.kd_toko='$kd_toko' and mas_jual.tgl_jual>='$tgl1' and mas_jual.tgl_jual<='$tgl2' $brand_filter_sql ORDER BY mas_jual.no_urut ASC");     
@@ -187,7 +211,7 @@
                   <th style="width:11%">SUB.TOTAL</th>
                   <?php if($cr_bay=="TEMPO"){ ?>
                   <th style="width:10%">UANG MUKA</th>     
-                  <?php }else if($cr_bay=="TUNAI"){ ?>  
+                  <?php }else if($cr_bay=="TUNAI" || $cr_bay=="COD" || $cr_bay=="QRIS"){ ?>   
                      <th style="width:8%">CR.BAYAR</th>     
                   <?php }else{ ?>
                      <th style="width:10%">UANG MUKA</th>            
@@ -198,7 +222,7 @@
     	         </tr> 
               </thead>   
     	        <?php
-    	        $no=0;$totbeli=0;$no_fakjual='';$tgl_fakjual='0000-00-00';$disc=0;$jumlah=0;$dp=0;$totpit=0;$tot_disc=0;$jumtrf=0;$jumtun=0; $nofak="";
+    	        $no=0;$totbeli=0;$no_fakjual='';$tgl_fakjual='0000-00-00';$disc=0;$jumlah=0;$dp=0;$totpit=0;$tot_disc=0;$jumtrf=0;$jumtun=0;$jumcod=0; $nofak="";
               $totdp=0;$totjual=0;
     	      	while($databay=mysqli_fetch_assoc($cek)){
       	      	  $no++;	
@@ -209,7 +233,15 @@
       	      	  $totbeli=$totbeli+$jumlah;
       	      	  $jml_brg=hitjmlbrg($databay['no_fakjual'],$databay['tgl_jual'],$kd_toko,$connect);
                   $tot_disc=$tot_disc+$databay['tot_disc'];
-      	      	  if($databay['trf']=='TRANSFER'){
+      	      	  if($databay['kd_bayar']=='COD'){
+                    $jumcod=$jumcod+$jumlah;
+                    $trfk='COD';
+                    $dp=0;
+                  } elseif($databay['kd_bayar']=='QRIS'){
+                    $jumtrf=$jumtrf+$jumlah;
+                    $trfk='QRIS';
+                    $dp=0;
+                  } elseif($databay['trf']=='TRANSFER'){
                     if($databay['kd_bayar']=='TEMPO') {
                       $totdp=$totdp+$databay['bayar_uang'];
                       $dp=$databay['bayar_uang'];
@@ -248,7 +280,7 @@
                   <td style="text-align:right;font-size: 8pt"><?php echo gantitides($jumlah); ?></td>
                   <?php if($cr_bay=="TEMPO"){ ?>
                     <td style="text-align:right;font-size: 8pt"><?php echo gantitides($dp); ?></td>
-                  <?php }else if($cr_bay=="TUNAI"){ ?>  
+                    <?php }else if($cr_bay=="TUNAI" || $cr_bay=="COD" || $cr_bay=="QRIS"){ ?>   
                     <td style="text-align:center;font-size: 8pt"><?php echo $trfk; ?></td>    	                 
                   <?php }else{ ?>
                     <td style="text-align:right;font-size: 8pt"><?php echo gantitides($dp); ?></td>
@@ -305,7 +337,7 @@
                     <td style="text-align:right;font-size: 8pt"><?php echo gantitides($dret['hrg_jual']*$dret['qty_brg']); ?></td>
                     <td style="text-align:right;font-size: 8pt"><?php echo gantitides(round($diskon*$dret['qty_retur'],0)); ?></td>
                     <td style="text-align:right;font-size: 8pt;"><?php echo gantitides($jmlsub); ?></td>
-                    <?php if($cr_bay !="TUNAI"){ ?>
+                    <?php if($cr_bay !="TUNAI" && $cr_bay !="COD" && $cr_bay !="QRIS"){ ?>
                       <td style="text-align:right;font-size: 8pt"><?php echo 0 ?></td>
                       <td style="text-align:center;font-size: 8pt"><?php echo $dret['kd_bayar'].$trfk; ?></td>
                     <?php } else { ?>
@@ -348,6 +380,14 @@
                 <td colspan="2" style="border:none"></td>
                 <td colspan="2" style="border:none;text-align:left"><i class="fa fa-check-square-o">&nbsp;</i>Total Bayar Transfer</td>
                 <td style="border:none;text-align:right"><?=gantitides($jumtrf+$piutrf)?></td>
+                <td style="border:none"></td>
+                </tr>
+              <tr style="font-weight:bold">
+                <td colspan="2" style="border:none;text-align:left"><i class="fa fa-bullseye">&nbsp;</i>Pembayaran COD</td>
+                <td style="border:none;text-align:right"><?=gantitides($jumcod)?></td>
+                <td colspan="2" style="border:none"></td>
+                <td colspan="2" style="border:none;text-align:left"><i class="fa fa-check-square-o">&nbsp;</i>Total Bayar COD</td>
+                <td style="border:none;text-align:right"><?=gantitides($jumcod)?></td>
                 <td style="border:none"></td>
               </tr> 
               <tr style="font-weight:bold">

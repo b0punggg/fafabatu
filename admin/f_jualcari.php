@@ -1066,13 +1066,19 @@
                 <span><button id="btn-baypil" class="form-control yz-theme-l4 w3-hover-shadow" style="height: 31px;cursor: pointer;border:1px solid black" type="button"><i class="fa fa-caret-down"></i></button></span>
               </div>
 
-              <div id="tabbay" class="table-responsive w3-card" style="overflow:hidden;border-style: ridge; border-color: white;height: 62px;display: none;position: absolute;z-index: 1;max-width: 260px">
+              <div id="tabbay" class="table-responsive w3-card" style="overflow:hidden;border-style: ridge; border-color: white;height: 124px;display: none;position: absolute;z-index: 1;max-width: 260px">
                 <table class="table table-hover" style="font-size:10pt;background-color: white ">
                   <tr>
-                    <td align="middle" class="button" onclick="document.getElementById('kd_bayar2').value='TUNAI'" style="cursor: pointer;padding: 2px"><?php echo 'TUNAI' ?></td>
+                  <td align="middle" class="button" onclick="pilihCaraBayar('TUNAI')" style="cursor: pointer;padding: 2px">TUNAI</td>
                   </tr>
                   <tr>
-                    <td align="middle" class="button" onclick="document.getElementById('kd_bayar2').value='TEMPO'" style="cursor: pointer;padding: 2px"><?php echo 'TEMPO' ?></td>
+                  <td align="middle" class="button" onclick="pilihCaraBayar('TEMPO')" style="cursor: pointer;padding: 2px">TEMPO</td>
+                  </tr>
+                  <tr>
+                    <td align="middle" class="button" onclick="pilihCaraBayar('COD')" style="cursor: pointer;padding: 2px">COD</td>
+                  </tr>
+                  <tr>
+                    <td align="middle" class="button" onclick="pilihCaraBayar('QRIS')" style="cursor: pointer;padding: 2px">QRIS</td>
                   </tr>
                 </table>
               </div>
@@ -1423,16 +1429,16 @@
     
     jumlah=bayar-(jumdisc+congkir);
 
-    if (kd_bayar=='TUNAI' && jumlah<0){
+    if ((kd_bayar=='TUNAI' || kd_bayar=='COD' || kd_bayar=='QRIS') && jumlah<0){
       document.getElementById('tmb-simpan').setAttribute('disabled',true); 
       document.getElementById('kembali').value=angkatitikdes(jumlah); 
       document.getElementById('kembali1').value=angkatitikdes(jumlah);   
 
-    }else if(kd_bayar=='TUNAI' && jumlah>=0)  {
+      }else if((kd_bayar=='TUNAI' || kd_bayar=='COD' || kd_bayar=='QRIS') && jumlah>=0)  {
       document.getElementById('tmb-simpan').removeAttribute('disabled',true); 
       document.getElementById('kembali').value=angkatitikdes(jumlah); 
       document.getElementById('kembali1').value=angkatitikdes(jumlah);   
-    }else if(kd_bayar=='TUNAI' && jumlah=='')  {
+      }else if((kd_bayar=='TUNAI' || kd_bayar=='COD' || kd_bayar=='QRIS') && jumlah=='')  {
       document.getElementById('tmb-simpan').setAttribute('disabled',true); 
       document.getElementById('kembali').value=angkatitikdes(jumlah); 
       document.getElementById('kembali1').value=angkatitikdes(jumlah);   
@@ -1492,6 +1498,19 @@
     }, 500);
   });
 
+  function pilihCaraBayar(val){
+    document.getElementById('kd_bayar2').value = val;
+    var cr = document.getElementById('cr_bay');
+    if(cr){ cr.value = val; }
+    var checkBox = document.getElementById('cek_tf');
+    var pilTf = document.getElementById('pil_tf');
+    if(val === 'COD' || val === 'QRIS'){
+      if(checkBox){ checkBox.checked = true; }
+      if(pilTf){ pilTf.value = 'TRANSFER'; }
+    }
+    hitbayar(val);
+  }
+  
   function cektf() {
     var checkBox = document.getElementById("cek_tf");
     var text = document.getElementById("pil_tf");

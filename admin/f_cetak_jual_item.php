@@ -149,9 +149,61 @@
       if (!$sqlret) {
         echo "Error query sqlret: " . mysqli_error($connect);
       }
-    }else{
+      }else if($cr_bay=="COD"){
+        $hspan=11;
+        $ket='COD';
+        $cekjual=mysqli_query($connect,"SELECT dum_jual.tgl_jual,dum_jual.no_fakjual,dum_jual.nm_brg,dum_jual.qty_brg,dum_jual.hrg_beli,dum_jual.hrg_jual,dum_jual.discitem,dum_jual.discrp,dum_jual.kd_bayar,dum_jual.ket,dum_jual.trf,dum_jual.discvo,dum_jual.execut,pelanggan.nm_pel,kemas.nm_sat1,mas_jual.bayar_uang,mas_jual.saldo_hutang,dum_jual.id_bag,bag_brg.nm_bag FROM dum_jual
+          LEFT JOIN pelanggan ON dum_jual.kd_pel=pelanggan.kd_pel 
+          LEFT JOIN kemas ON dum_jual.kd_sat=kemas.no_urut
+          LEFT JOIN mas_jual ON dum_jual.no_fakjual=mas_jual.no_fakjual
+          LEFT JOIN bag_brg ON dum_jual.id_bag=bag_brg.no_urut
+          LEFT JOIN mas_brg ON dum_jual.kd_brg=mas_brg.kd_brg
+          WHERE dum_jual.kd_toko='$kd_toko' and dum_jual.tgl_jual>='$tgl1' and dum_jual.tgl_jual<='$tgl2' and dum_jual.kd_bayar='COD' AND panding=false $brand_sql ORDER BY dum_jual.tgl_jual,dum_jual.no_fakjual ASC");
+        if (!$cekjual) {
+          echo "Error query cekjual: " . mysqli_error($connect);
+        }
+  
+        $sqlret  = mysqli_query($connect,"SELECT * FROM retur_jual 
+        LEFT JOIN dum_jual ON retur_jual.no_urutjual=dum_jual.no_urut 
+        LEFT JOIN bag_brg ON dum_jual.id_bag=bag_brg.no_urut
+        LEFT JOIN mas_jual ON retur_jual.no_fakjual=mas_jual.no_fakjual
+        LEFT JOIN pelanggan ON dum_jual.kd_pel=pelanggan.kd_pel 
+        LEFT JOIN kemas ON dum_jual.kd_sat=kemas.no_urut
+        LEFT JOIN mas_brg ON dum_jual.kd_brg=mas_brg.kd_brg
+        WHERE retur_jual.tgl_retur>='$tgl1' AND retur_jual.tgl_retur<='$tgl2' AND  retur_jual.kd_toko='$kd_toko' AND dum_jual.kd_bayar='COD' $brand_sql
+        ORDER BY retur_jual.no_urutretur ASC ");
+        if (!$sqlret) {
+          echo "Error query sqlret: " . mysqli_error($connect);
+        }
+      }else if($cr_bay=="QRIS"){
+        $hspan=11;
+        $ket='QRIS';
+        $cekjual=mysqli_query($connect,"SELECT dum_jual.tgl_jual,dum_jual.no_fakjual,dum_jual.nm_brg,dum_jual.qty_brg,dum_jual.hrg_beli,dum_jual.hrg_jual,dum_jual.discitem,dum_jual.discrp,dum_jual.kd_bayar,dum_jual.ket,dum_jual.trf,dum_jual.discvo,dum_jual.execut,pelanggan.nm_pel,kemas.nm_sat1,mas_jual.bayar_uang,mas_jual.saldo_hutang,dum_jual.id_bag,bag_brg.nm_bag FROM dum_jual
+          LEFT JOIN pelanggan ON dum_jual.kd_pel=pelanggan.kd_pel 
+          LEFT JOIN kemas ON dum_jual.kd_sat=kemas.no_urut
+          LEFT JOIN mas_jual ON dum_jual.no_fakjual=mas_jual.no_fakjual
+          LEFT JOIN bag_brg ON dum_jual.id_bag=bag_brg.no_urut
+          LEFT JOIN mas_brg ON dum_jual.kd_brg=mas_brg.kd_brg
+          WHERE dum_jual.kd_toko='$kd_toko' and dum_jual.tgl_jual>='$tgl1' and dum_jual.tgl_jual<='$tgl2' and dum_jual.kd_bayar='QRIS' AND panding=false $brand_sql ORDER BY dum_jual.tgl_jual,dum_jual.no_fakjual ASC");
+        if (!$cekjual) {
+          echo "Error query cekjual: " . mysqli_error($connect);
+        }
+  
+        $sqlret  = mysqli_query($connect,"SELECT * FROM retur_jual 
+        LEFT JOIN dum_jual ON retur_jual.no_urutjual=dum_jual.no_urut 
+        LEFT JOIN bag_brg ON dum_jual.id_bag=bag_brg.no_urut
+        LEFT JOIN mas_jual ON retur_jual.no_fakjual=mas_jual.no_fakjual
+        LEFT JOIN pelanggan ON dum_jual.kd_pel=pelanggan.kd_pel 
+        LEFT JOIN kemas ON dum_jual.kd_sat=kemas.no_urut
+        LEFT JOIN mas_brg ON dum_jual.kd_brg=mas_brg.kd_brg
+        WHERE retur_jual.tgl_retur>='$tgl1' AND retur_jual.tgl_retur<='$tgl2' AND  retur_jual.kd_toko='$kd_toko' AND dum_jual.kd_bayar='QRIS' $brand_sql
+        ORDER BY retur_jual.no_urutretur ASC ");
+        if (!$sqlret) {
+          echo "Error query sqlret: " . mysqli_error($connect);
+        }
+      }else{
       $hspan=14;  
-      $ket='TUNAI / TEMPO';
+      $ket='TUNAI / TEMPO / COD / QRIS';
       $cekjual=mysqli_query($connect,"SELECT dum_jual.tgl_jual,dum_jual.no_fakjual,dum_jual.nm_brg,dum_jual.qty_brg,dum_jual.hrg_beli,dum_jual.hrg_jual,dum_jual.discitem,dum_jual.discrp,dum_jual.kd_bayar,dum_jual.ket,dum_jual.trf,dum_jual.discvo,dum_jual.execut,pelanggan.nm_pel,kemas.nm_sat1,mas_jual.bayar_uang,mas_jual.saldo_hutang,dum_jual.id_bag,bag_brg.nm_bag FROM dum_jual
       LEFT JOIN pelanggan ON dum_jual.kd_pel=pelanggan.kd_pel 
       LEFT JOIN kemas ON dum_jual.kd_sat=kemas.no_urut
@@ -258,7 +310,7 @@
             
             if($cekjual && $cekjual !== false && mysqli_num_rows($cekjual)>=1){
                 $no=0;$tot_hrgjual=0;$tot_jual=0;$jumlah=0;
-                $disc=0;$subtot1=0;$subtot2=0;$totpit=0;$diskon=0;$totdp=0;$dp=0;$jumtrf=0;$jumtun=0;$totdivo=0;$totdisc=0;
+                $disc=0;$subtot1=0;$subtot2=0;$totpit=0;$diskon=0;$totdp=0;$dp=0;$jumtrf=0;$jumtun=0;$jumcod=0;$totdivo=0;$totdisc=0;
                 $nofak="";$tottempo=0;$tottunai=0;
                 while ($sqljual=mysqli_fetch_assoc($cekjual)) {
                   $no++;                   
@@ -292,7 +344,15 @@
                   
                   if($sqljual['saldo_hutang']==0){$kets="LUNAS";}else{$kets="BELUM";}
 
-                  if($sqljual['trf']=='TRANSFER'){
+                  if($sqljual['kd_bayar']=='COD'){
+                    $jumcod=$jumcod+$jumlah;
+                    $trfk='-COD';
+                    $dp=0;
+                  } elseif($sqljual['kd_bayar']=='QRIS'){
+                    $jumtrf=$jumtrf+$jumlah;
+                    $trfk='-QRIS';
+                    $dp=0;
+                  } elseif($sqljual['trf']=='TRANSFER'){
                     if($sqljual['kd_bayar']=='TEMPO') {
                       $totdp=$totdp+$sqljual['bayar_uang'];
                       $dp=$sqljual['bayar_uang'];
@@ -482,7 +542,15 @@
                   <td style="border:none;text-align:right;"><i class="fa fa-check-square-o">&nbsp;</i>Total Bayar Transfer</td>
                   <td style="border:none;text-align:right;border-bottom: 1px solid black"><?=gantitides($jumtrf+$piutrf)?></td>
                   <td style="border:none"></td>
-                </tr> 
+                  </tr>
+                <tr style="font-weight:bold">
+                  <td style="border:none"></td>
+                  <td style="border:none;text-align:left"><i class="fa fa-bullseye">&nbsp;</i>Pembayaran COD</td>
+                  <td style="border:none;text-align:right;"><?=gantitides($jumcod)?> &emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;&emsp13;</td>
+                  <td style="border:none;text-align:right;"><i class="fa fa-check-square-o">&nbsp;</i>Total Bayar COD</td>
+                  <td style="border:none;text-align:right;border-bottom: 1px solid black"><?=gantitides($jumcod)?></td>
+                  <td style="border:none"></td>
+                </tr>
                 <tr style="font-weight:bold">
                     <td style="border:none"></td>
                   <td style="border:none;text-align:left"><i class="fa fa-bullseye">&nbsp;</i>Piutang Bayar Cash</td>

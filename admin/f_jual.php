@@ -1514,6 +1514,8 @@
             <select class="form-control" name="cr_bay" id="cr_bay" style="display:none;border: 1px solid black;font-size:12px ;height: 30px" required="" tabindex="4" onclick="document.getElementById('kd_bayar2').value=this.value">
                     <option value="TUNAI">TUNAI</option>
                     <option value="TEMPO">TEMPO</option>
+                    <option value="COD">COD</option>
+                    <option value="QRIS">QRIS</option>
                   </select>
 
             

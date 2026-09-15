@@ -1143,6 +1143,8 @@
                       <select class="form-control" name="pilih3" id="pilih3" style="border: 1px solid black;font-size:12px ;height: 30px;width: 165px" required="" tabindex="4">
                             <option value="TUNAI">TUNAI</option>
                             <option value="TEMPO">TEMPO</option>
+                            <option value="COD">COD</option>
+                            <option value="QRIS">QRIS</option>
                             <option value="SEMUA">SEMUA</option>
                           </select>
                     </div>   
