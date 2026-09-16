@@ -12,11 +12,10 @@ function hubung($user){
       // Untuk localhost, gunakan root tanpa password
       $username="root";
       $password="";
-     }
-   }else{
+      } else {
       $username="root";
-      $password=""; 
-   }
+      $password="";
+    }
     
   unset($data,$sql); 
   mysqli_close($con);

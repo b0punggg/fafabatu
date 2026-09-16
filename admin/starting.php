@@ -440,6 +440,7 @@
         <div id="listtran" class="w3-padding-large w3-text-white" style="display: none;text-shadow: 2px 3px 5px black">
           <a href="f_kas.php" class="w3-bar-item w3-button w3-border" style="padding:2px;padding-left:20px "><i class="fa fa-bullseye">&nbsp;</i>Kas Kasir</a>
           <a href="f_beli.php" class="w3-bar-item w3-button w3-border" style="padding:2px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Pembelian</a>
+          <a href="f_pesan.php" class="w3-bar-item w3-button w3-border" style="padding:2px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Pemesanan</a>
           <a href="f_jual.php" class="w3-bar-item w3-button w3-border" style="padding:2px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Penjualan</a>
           <a href="f_hutangbayar.php" class="w3-bar-item w3-button w3-border" style="padding:2px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Hutang</a>
           <a href="f_piutangbayar.php" class="w3-bar-item w3-button w3-border" style="padding:2px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Piutang</a>
@@ -592,6 +593,7 @@
         <div id="listtran" class="w3-padding-large w3-text-white" style="display: none;text-shadow: 2px 3px 5px black">
             <a href="f_kas.php" class="w3-bar-item w3-button w3-border" style="padding:4px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Kas Kasir</a>
             <a href="f_beli.php" class="w3-bar-item w3-button w3-border" style="padding:4px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Pembelian</a>
+            <a href="f_pesan.php" class="w3-bar-item w3-button w3-border" style="padding:4px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Pemesanan</a>
             <a href="f_jual.php" class="w3-bar-item w3-button w3-border" style="padding:4px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Penjualan</a>
             <a href="f_hutangbayar.php" class="w3-bar-item w3-button w3-border" style="padding:4px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Hutang</a>
             <a href="f_piutangbayar.php" class="w3-bar-item w3-button w3-border" style="padding:4px;padding-left:20px"><i class="fa fa-bullseye">&nbsp;</i>Piutang</a>
