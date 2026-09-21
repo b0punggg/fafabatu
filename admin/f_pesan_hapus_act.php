@@ -19,4 +19,4 @@ if ($kd_toko !== '' && $id !== '') {
 }
 mysqli_close($connect);
 ob_end_clean();
-echo '<script>if(typeof popnew_warning==="function"){popnew_warning("Item dihapus");}if(typeof carinota==="function"){carinota(1,true);}</script>';
+echo '<script>if(typeof popnew_warning==="function"){popnew_warning("Item dihapus");}if(typeof carinota==="function"){carinota(1,true);}if(typeof carilistbrg==="function"){carilistbrg(1,true);}</script>';

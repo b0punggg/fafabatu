@@ -43,7 +43,7 @@ $jumlah_data = intval($get_jumlah['jumlah']);
       <th width="10%">SATUAN</th>
       <th width="12%">HARGA BELI</th>
       <th width="12%">JUMLAH</th>
-      <th colspan="2" width="8%">OPSI</th>
+      <th width="6%">OPSI</th>
     </tr>
 <?php
 $no = $limit_start;
@@ -69,18 +69,6 @@ if ($sql) {
       <td align="right"><?php echo pesanFmtUang($data['hrg_beli']); ?>&nbsp;</td>
       <td align="right"><?php echo pesanFmtUang($data['jumlah']); ?>&nbsp;</td>
       <td align="center">
-        <button type="button" class="btn btn-sm btn-primary fa fa-edit" title="Edit" onclick="
-          document.getElementById('no_urut').value='<?=$param?>';
-          document.getElementById('kd_brg').value='<?=htmlspecialchars($data['kd_brg'], ENT_QUOTES)?>';
-          document.getElementById('nm_brg').value='<?=$nm?>';
-          document.getElementById('kd_sat').value='<?=htmlspecialchars($data['kd_sat'], ENT_QUOTES)?>';
-          document.getElementById('nm_sat').value='<?=$nmsat?>';
-          document.getElementById('qty_pesan').value='<?=$data['qty_pesan']?>';
-          document.getElementById('hrg_beli').value='<?=pesanFmtUang($data['hrg_beli'])?>';
-          document.getElementById('qty_pesan').focus();
-        "></button>
-      </td>
-      <td align="center">
         <button type="button" class="btn btn-sm btn-danger fa fa-trash" title="Hapus" onclick="if(confirm('Hapus item ini?')){delrec('<?=$param?>')}"></button>
       </td>
     </tr>
@@ -92,7 +80,7 @@ if ($sql) {
     <tr class="yz-theme-l4">
       <th colspan="5" style="text-align:right">TOTAL PEMESANAN</th>
       <th style="text-align:right"><?php echo pesanFmtUang($gtot); ?>&nbsp;</th>
-      <th colspan="2"></th>
+      <th></th>
     </tr>
   </table>
 </div>

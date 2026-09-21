@@ -155,3 +155,64 @@ if (!function_exists('pesanFmtUang')) {
     return number_format((float)$n, 2, ',', '.');
   }
 }
+
+if (!function_exists('pesanEnsureHeader')) {
+  function pesanEnsureHeader($connect, $no_po, $tgl_po, $kd_toko, $kd_sup, $ket) {
+    $no_po_esc = mysqli_real_escape_string($connect, $no_po);
+    $tgl_po_esc = mysqli_real_escape_string($connect, $tgl_po);
+    $kd_toko_esc = mysqli_real_escape_string($connect, $kd_toko);
+    $kd_sup_esc = mysqli_real_escape_string($connect, $kd_sup);
+    $ket_esc = mysqli_real_escape_string($connect, $ket);
+
+    $cekhead = mysqli_query($connect, "SELECT * FROM mas_pesan WHERE no_po='$no_po_esc' AND kd_toko='$kd_toko_esc'");
+    if ($cekhead && mysqli_num_rows($cekhead) > 0) {
+      $head = mysqli_fetch_assoc($cekhead);
+      mysqli_free_result($cekhead);
+      if ($head['kd_sup'] !== '' && $head['kd_sup'] !== $kd_sup) {
+        return 'Satu PO hanya untuk satu supplier';
+      }
+      mysqli_query($connect, "UPDATE mas_pesan SET tgl_po='$tgl_po_esc', kd_sup='$kd_sup_esc', ket='$ket_esc' WHERE no_po='$no_po_esc' AND kd_toko='$kd_toko_esc'");
+      mysqli_query($connect, "UPDATE dum_pesan SET tgl_po='$tgl_po_esc', kd_sup='$kd_sup_esc' WHERE no_po='$no_po_esc' AND kd_toko='$kd_toko_esc'");
+      return '';
+    }
+    if ($cekhead) {
+      mysqli_free_result($cekhead);
+    }
+    $now = date('Y-m-d H:i:s');
+    mysqli_query($connect, "INSERT INTO mas_pesan (tgl_po,no_po,kd_toko,kd_sup,ket,tot_pesan,status,execut) VALUES('$tgl_po_esc','$no_po_esc','$kd_toko_esc','$kd_sup_esc','$ket_esc','0','DRAFT','$now')");
+    return '';
+  }
+}
+
+if (!function_exists('pesanUpsertItem')) {
+  function pesanUpsertItem($connect, $no_po, $tgl_po, $kd_toko, $kd_sup, $kd_brg, $nm_brg, $qty) {
+    if ($qty <= 0) {
+      $qty = 1;
+    }
+    $last = pesanLastHargaBeli($connect, $kd_brg, $kd_toko);
+    $hrg = floatval($last['hrg_beli']);
+    $kd_sat = $last['kd_sat'];
+    $jumlah = round($qty * $hrg, 2);
+
+    $no_po_esc = mysqli_real_escape_string($connect, $no_po);
+    $tgl_po_esc = mysqli_real_escape_string($connect, $tgl_po);
+    $kd_toko_esc = mysqli_real_escape_string($connect, $kd_toko);
+    $kd_sup_esc = mysqli_real_escape_string($connect, $kd_sup);
+    $kd_brg_esc = mysqli_real_escape_string($connect, $kd_brg);
+    $nm_brg_esc = mysqli_real_escape_string($connect, $nm_brg);
+    $kd_sat_esc = mysqli_real_escape_string($connect, $kd_sat);
+
+    $cekitem = mysqli_query($connect, "SELECT no_urut FROM dum_pesan WHERE no_po='$no_po_esc' AND kd_toko='$kd_toko_esc' AND kd_brg='$kd_brg_esc' LIMIT 1");
+    if ($cekitem && mysqli_num_rows($cekitem) > 0) {
+      $it = mysqli_fetch_assoc($cekitem);
+      $idu = intval($it['no_urut']);
+      mysqli_query($connect, "UPDATE dum_pesan SET tgl_po='$tgl_po_esc', kd_sup='$kd_sup_esc', nm_brg='$nm_brg_esc', kd_sat='$kd_sat_esc', qty_pesan='$qty', hrg_beli='$hrg', jumlah='$jumlah' WHERE no_urut='$idu'");
+      mysqli_free_result($cekitem);
+    } else {
+      if ($cekitem) {
+        mysqli_free_result($cekitem);
+      }
+      mysqli_query($connect, "INSERT INTO dum_pesan (no_po,tgl_po,kd_toko,kd_sup,kd_brg,nm_brg,kd_sat,qty_pesan,hrg_beli,jumlah) VALUES('$no_po_esc','$tgl_po_esc','$kd_toko_esc','$kd_sup_esc','$kd_brg_esc','$nm_brg_esc','$kd_sat_esc','$qty','$hrg','$jumlah')");
+    }
+  }
+}

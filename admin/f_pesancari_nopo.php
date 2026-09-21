@@ -63,6 +63,7 @@ if ($sql1) {
           document.getElementById('ket').value='<?=$ket?>';
           document.getElementById('fnotapesan').style.display='none';
           carinota(1,true);
+          if(typeof carilistbrg==='function'){carilistbrg(1,true);}
         "></button>
       </td>
     </tr>
