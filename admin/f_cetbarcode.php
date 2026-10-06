@@ -23,6 +23,7 @@
     border-spacing: 1px;
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.js"></script>
 <script>   
   function listbrg(page_number, search){
     $.ajax({
@@ -132,6 +133,20 @@
         alert(xhr.responseText); // munculkan alert
       }
     }); 
+  }
+
+  function cetaktspl(){
+    $.getJSON('f_cetbarcode_tspl.php', function(res){
+      if(res.jumlah == 0){ alert('Belum ada yang dipilih'); return; }
+      var p = qz.websocket.isActive() ? Promise.resolve() : qz.websocket.connect();
+      p.then(function(){ return qz.printers.find('XP-360B'); })
+       .then(function(printer){
+          var cfg = qz.configs.create(printer);
+          return qz.print(cfg, [{ type:'raw', format:'command', flavor:'plain', data: res.tspl }]);
+       })
+       .then(function(){ console.log('Terkirim'); })
+       .catch(function(e){ alert('Gagal cetak: ' + e); });
+    }).fail(function(xhr){ alert('Gagal ambil data TSPL: ' + xhr.responseText); });
   }
 
 	function cetakgo(bcodes){   

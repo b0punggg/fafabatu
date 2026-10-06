@@ -302,6 +302,12 @@
 						Kertas 80mm
 					</label>
 				</div>
+				<div class="form-check">
+	<input class="form-check-input" type="radio" name="c_kertas" id="c_kertas4" value='70'>
+	<label class="form-check-label" for="c_kertas4">
+		Kertas 70mm (Label 2 Kolom)
+	</label>
+</div>
 				<div>
 					<button class="btn btn-sm btn-primary form-control mt-3" type="submit" >PILIH</button>
 				</div>
