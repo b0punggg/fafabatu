@@ -10,7 +10,8 @@ include 'cekmasuk.php';
 include 'config.php';
 include 'f_cetak_jual_item_helper.php';
 
-$is_admin = (isset($_SESSION['kodepemakai']) && $_SESSION['kodepemakai'] == '2');
+$oto = isset($_SESSION['kodepemakai']) ? trim($_SESSION['kodepemakai']) : '';
+$is_admin = ($oto === '2' || $oto === '3');
 
 $connect = opendtcek();
 if(!$connect){

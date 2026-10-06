@@ -12,7 +12,8 @@ if(!session_id()){
 include 'config.php';
 include 'f_cetak_jual_item_helper.php';
 $kd_toko = $_SESSION['id_toko'];
-$is_admin = (isset($_SESSION['kodepemakai']) && $_SESSION['kodepemakai'] == '2');
+$oto = isset($_SESSION['kodepemakai']) ? trim($_SESSION['kodepemakai']) : '';
+$is_admin = ($oto === '2' || $oto === '3');
 $connect = opendtcek();
 $brand_filter = sanitizeReportBrandFilter($connect, isset($_POST['kd_brand']) ? $_POST['kd_brand'] : '');
 $brand_sql = ($brand_filter === '') ? '' : " AND UPPER(mas_brg.nm_brg) LIKE UPPER('%$brand_filter%') ";
