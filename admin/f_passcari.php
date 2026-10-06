@@ -62,8 +62,12 @@
 	      
 	      if ($data['otoritas']=='1') {
 	      	$oto1='OPERATOR';
-	      } else {
+	      } elseif ($data['otoritas']=='3') {
+	      	$oto1='KEPALA TOKO';
+	      } elseif ($data['otoritas']=='2') {
 	      	$oto1='ADMINISTRATOR';
+	      } else {
+	      	$oto1='OPERATOR';
 	      }
 	      
 	    ?>

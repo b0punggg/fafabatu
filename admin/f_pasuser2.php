@@ -13,8 +13,12 @@
     $dataus=mysqli_fetch_array($fuser);
     if ($dataus['otoritas']=='1') {
       $otoritas='OPERATOR';
-    } else {
+    } elseif ($dataus['otoritas']=='3') {
+      $otoritas='KEPALA TOKO';
+    } elseif ($dataus['otoritas']=='2') {
       $otoritas='ADMINISTRATOR';
+    } else {
+      $otoritas='OPERATOR';
     }                              			  
 	 ?>
    
@@ -193,6 +197,7 @@
                           
                           <select name="otoritas" id="pilotor" class="form-control" style="font-size:12px;border-radius: 5px;"> 
                             <option value="1">OPERATOR</option>
+                            <option value="3">KEPALA TOKO</option>
                             <option value="2">ADMINISTRATOR</option>
                           </select>        
                            
@@ -258,12 +263,12 @@
             </div>
           </div>      
 
-          <?php if ($dataus['otoritas']=='1'){ ?>
-            <script>document.getElementById("datlist").style.display="none";</script>
-            <script>document.getElementById("btn-tbh").style.display="none";</script>
-          <?php }elseif ($dataus['otoritas']=='2') {?>
+          <?php if ($dataus['otoritas']=='2') {?>
             <script>document.getElementById("datlist").style.display="block";</script>
             <script>document.getElementById("btn-tbh").style.display="block";</script>
+          <?php } else { ?>
+            <script>document.getElementById("datlist").style.display="none";</script>
+            <script>document.getElementById("btn-tbh").style.display="none";</script>
           <?php } ?>
           <!-- End Tampilkan data alat -->	
 

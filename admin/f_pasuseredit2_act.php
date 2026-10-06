@@ -10,7 +10,10 @@
   $alamat=strtoupper($_POST['alamat']);
   $no_hp=$_POST['no_hp'];
   $foto=$_FILES['foto']['name'];
-  $otoritas=$_POST['otoritas'];
+  $otoritas=isset($_POST['otoritas']) ? $_POST['otoritas'] : '1';
+  if($oto != '2'){
+    $otoritas = '1';
+  }
   $f=false;$d=false;
   //echo $id_user1;
 
@@ -18,7 +21,7 @@
    // Insert data 
    if(mysqli_num_rows($cek1)>=1)
    {
-       if($oto<>'1'){
+       if($oto=='2'){
          $d=mysqli_query($connect,"update pemakai set alamat='$alamat',no_hp='$no_hp',otoritas='$otoritas',kd_toko='$kd_toko' where id_user='$id_user1'");              
        } else {
           $d=mysqli_query($connect,"update pemakai set alamat='$alamat',no_hp='$no_hp',kd_toko='$kd_toko' where id_user='$id_user1'");              

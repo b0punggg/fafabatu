@@ -22,7 +22,7 @@
   WHERE dum_jual.kd_toko='$kd_toko' AND dum_jual.no_fakjual='$no_fakjual' ORDER BY dum_jual.no_urut ASC");
 
   if(mysqli_num_rows($cek)>=1){    
-    if($oto=='2'){
+    if($oto=='2' || $oto=='3'){
       while ( $data=mysqli_fetch_array($cek)) { 
         $brg_klrawal = $stok_jualawal=$jml_brgawal=0;   
         $kd_satawal  = $data['kd_sat'];
@@ -69,7 +69,7 @@
         if(mysqli_num_rows($qcroto)>0){
           
           ?><script>
-          if(confirm('Transaksi Hapus Nota tidak dapat dilakukan, klik Oke untuk kirim permintaan ke Admin'))
+          if(confirm('Transaksi Hapus Nota tidak dapat dilakukan, klik Oke untuk kirim permintaan ke Kepala Toko / Admin'))
           { 
             <?php
             $cla=mysqli_query($conhnot,"SELECT * FROM file_log WHERE no_fak='$no_fakjual'");

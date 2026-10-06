@@ -3,11 +3,16 @@
   include "config.php";
   session_start();
   $conlog     = opendtcek();
+  $oto_sess   = isset($_SESSION['kodepemakai']) ? trim($_SESSION['kodepemakai']) : '';
+  $bisa_acc   = ($oto_sess==='2' || $oto_sess==='3');
   $xc         = explode(';',$_POST['keyword']);
   $no_fakjual = trim($xc[0]);
   $ket        = trim($xc[1]);
   $kd_toko    = trim($xc[2]);
   $id_hapus   = mysqli_escape_string($conlog,$_POST['keyword']);
+  if($oto_sess==='3' && isset($_SESSION['id_toko']) && $kd_toko !== trim($_SESSION['id_toko'])){
+    $bisa_acc = false;
+  }
   ?>
   <center><h6><?=strtoupper($ket)?></h6></center>
   <div class="table-responsive w3-border" style="overflow:auto;">
@@ -49,6 +54,7 @@
   </div>
   <div class="row w3-margin-top">
     <div class="col-sm-8 offset-sm-2">
+      <?php if($bisa_acc){ ?>
       <div class="row">
         <div class="col-sm">
           <button class="hrf_res3 btn-md btn-primary form-control w3-margin-bottom" onclick="if(confirm('Yakin, hapus penjualan barang ?')){konfir_del_n('<?=$id_hapus.';D'?>')}">Konfirmasi</button>  
@@ -57,6 +63,9 @@
           <button class="hrf_res3 btn-md btn-warning form-control" onclick="if(confirm('Abaikan konfirmasi ?')){konfir_del_n('<?=$id_hapus.';A'?>');}">Abaikan</button> 
         </div>
       </div>
+      <?php } else { ?>
+      <div class="w3-center hrf_res2">Menunggu konfirmasi Kepala Toko / Admin</div>
+      <?php } ?>
     </div>
     
   </div>

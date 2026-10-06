@@ -71,55 +71,59 @@
     $jual_stok  = $jual_stok+$jml_brg;
     unset($data3);mysqli_free_result($cek3);
   
-    if($oto=='2'){ 
-      if ($potong==1){
-        $conhps2=opendtcek(); 
-        $xf=mysqli_query($conhps2, "UPDATE beli_brg set stok_jual='$jual_stok' WHERE no_urut='$no_item' ");  
-        $f=mysqli_query($conhps2, "UPDATE mas_brg SET brg_klr='$brg_klr',jml_brg='$jumbrg' WHERE kd_brg='$kd_brg'");
-      }
-      $f=mysqli_query($conhps2, "DELETE from dum_jual WHERE no_urut='$id'" );
-      mysqli_close($conhps2);
-    
-      //cek pd mas_jual 
-      $ada=0;
-      $cari=mysqli_query($conhps,"SELECT * FROM dum_jual where no_fakjual='$no_fakjual' and tgl_jual='$tgl_jual' AND kd_toko='$kd_toko' ");
-      if(mysqli_num_rows($cari)>=1){
-        $ada=1;
-      }else{
-        $ada=0;
-        mysqli_query($conhps,"DELETE FROM mas_jual WHERE no_fakjual='$no_fakjual' and tgl_jual='$tgl_jual' AND kd_toko='$kd_toko'");
-        mysqli_query($conhps,"DELETE FROM mas_jual_hutang WHERE no_fakjual='$no_fakjual' and tgl_jual='$tgl_jual' AND kd_toko='$kd_toko'");
-      }
-      unset($cari);
-
-      if($f){
-        if($ada==1){
-          ?><script>
-          popnew_warning("Data terhapus, silahkan update bayar nota");
-          document.getElementById("edit-warning").value=0;
-          kosongkan();
-          caribrgjual(1,true);
-          </script><?php  
-        }else{ 
-          ?><script>
-          popnew_warning("Data telah terhapus...");
-          document.getElementById("edit-warning").value=0;
-          kosongkan();
-          caribrgjual(1,true);
-          </script><?php  
+    if($oto=='2' || $oto=='3'){
+      if($oto=='3' && isset($data1['kd_toko']) && trim($data1['kd_toko']) !== trim($kd_toko)){
+        ?><script>popnew_error("Hanya dapat menghapus transaksi toko sendiri");</script><?php
+      } else {
+        if ($potong==1){
+          $conhps2=opendtcek();
+          $xf=mysqli_query($conhps2, "UPDATE beli_brg set stok_jual='$jual_stok' WHERE no_urut='$no_item' ");
+          $f=mysqli_query($conhps2, "UPDATE mas_brg SET brg_klr='$brg_klr',jml_brg='$jumbrg' WHERE kd_brg='$kd_brg'");
+          mysqli_close($conhps2);
         }
-      }else {
-        ?><script>popnew_warning("Data gagal dihapus..");
-        document.getElementById("edit-warning").value=0;
-        kosongkan();
-        caribrgjual(1,true);
-        </script><?php  
+        $f=mysqli_query($conhps, "DELETE from dum_jual WHERE no_urut='$id' AND kd_toko='$kd_toko'" );
+
+        //cek pd mas_jual
+        $ada=0;
+        $cari=mysqli_query($conhps,"SELECT * FROM dum_jual where no_fakjual='$no_fakjual' and tgl_jual='$tgl_jual' AND kd_toko='$kd_toko' ");
+        if(mysqli_num_rows($cari)>=1){
+          $ada=1;
+        }else{
+          $ada=0;
+          mysqli_query($conhps,"DELETE FROM mas_jual WHERE no_fakjual='$no_fakjual' and tgl_jual='$tgl_jual' AND kd_toko='$kd_toko'");
+          mysqli_query($conhps,"DELETE FROM mas_jual_hutang WHERE no_fakjual='$no_fakjual' and tgl_jual='$tgl_jual' AND kd_toko='$kd_toko'");
+        }
+        unset($cari);
+
+        if($f){
+          if($ada==1){
+            ?><script>
+            popnew_warning("Data terhapus, silahkan update bayar nota");
+            document.getElementById("edit-warning").value=0;
+            kosongkan();
+            caribrgjual(1,true);
+            </script><?php
+          }else{
+            ?><script>
+            popnew_warning("Data telah terhapus...");
+            document.getElementById("edit-warning").value=0;
+            kosongkan();
+            caribrgjual(1,true);
+            </script><?php
+          }
+        }else{
+          ?><script>popnew_warning("Data gagal dihapus..");
+          document.getElementById("edit-warning").value=0;
+          kosongkan();
+          caribrgjual(1,true);
+          </script><?php
+        }
       }
     }else{
       if($oto=='1'){
         //log file
         ?><script>
-        if(confirm('Transaksi Hapus Per Item tidak dapat dilakukan, klik Oke untuk kirim permintaan ke Admin')){ <?php
+        if(confirm('Transaksi Hapus Per Item tidak dapat dilakukan, klik Oke untuk kirim permintaan ke Kepala Toko / Admin')){ <?php
           $conhpsl=opendtcek();
           $cla=mysqli_query($conhpsl,"SELECT * FROM file_log WHERE no_fak='$no_fakjual'");
             if(mysqli_num_rows($cla)>0){

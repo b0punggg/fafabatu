@@ -11,6 +11,10 @@ if(!isset($_SESSION['masuk'])){
 	  $bag="Operator";
 	}elseif ($_SESSION['kodepemakai']=='2') {
 	  $bag="Administrator";
-	}	
+	}elseif ($_SESSION['kodepemakai']=='3') {
+	  $bag="Kepala Toko";
+	} else {
+	  $bag="Operator";
+	}
 }	
 ?>

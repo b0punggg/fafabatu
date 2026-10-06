@@ -6,12 +6,30 @@
   date_default_timezone_set('Asia/Jakarta');
   $tghi       = date("Y-m-d H:i:s");
   $id_user    = $_SESSION['id_user'];
-  $oto        = $_SESSION['kodepemakai'];
+  $oto        = isset($_SESSION['kodepemakai']) ? trim($_SESSION['kodepemakai']) : '';
+  $sess_toko  = isset($_SESSION['id_toko']) ? trim($_SESSION['id_toko']) : '';
   $xs         = explode(";",mysqli_escape_string($connect,$_POST['keyword']));
   $no_fakjual = trim(mysqli_escape_string($connect,$xs[0]));
   $ket        = trim(mysqli_escape_string($connect,$xs[1]));
   $kd_toko    = trim(mysqli_escape_string($connect,$xs[2]));
-  $pildel     = trim(mysqli_escape_string($connect,$xs[3]));
+  $pildel     = trim(mysqli_escape_string($connect,isset($xs[3]) ? $xs[3] : ''));
+
+  if($oto !== '2' && $oto !== '3'){
+    ?><script>popnew_error("Tidak berhak konfirmasi hapus");</script><?php
+    $html = ob_get_contents();
+    ob_end_clean();
+    echo json_encode(array('hasil'=>$html));
+    mysqli_close($connect);
+    exit;
+  }
+  if($oto === '3' && $kd_toko !== $sess_toko){
+    ?><script>popnew_error("Hanya dapat konfirmasi permintaan toko sendiri");</script><?php
+    $html = ob_get_contents();
+    ob_end_clean();
+    echo json_encode(array('hasil'=>$html));
+    mysqli_close($connect);
+    exit;
+  }
   $q          = mysqli_query($connect,"SELECT * FROM seting WHERE nm_per='POTONG'");
   $d          = mysqli_fetch_assoc($q);
   $potong     = $d['kode'];

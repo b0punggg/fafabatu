@@ -26,8 +26,14 @@
  $piut=$dtnews1['jumpiut'];
  unset($cekdata1,$dtnews1);    
  $del_l=0;
- if($_SESSION['kodepemakai']=='2'){
-  $cekd=mysqli_query($con,"SELECT COUNT(*) AS jumdel FROM file_log WHERE konfir='T'");
+ $oto_sess = isset($_SESSION['kodepemakai']) ? trim($_SESSION['kodepemakai']) : '';
+ if($oto_sess=='2' || $oto_sess=='3'){
+  if($oto_sess=='3'){
+    $kd_toko_esc = mysqli_real_escape_string($con, $kd_toko);
+    $cekd=mysqli_query($con,"SELECT COUNT(*) AS jumdel FROM file_log WHERE konfir='T' AND kd_toko='$kd_toko_esc'");
+  } else {
+    $cekd=mysqli_query($con,"SELECT COUNT(*) AS jumdel FROM file_log WHERE konfir='T'");
+  }
   $dtc1=mysqli_fetch_assoc($cekd);
   $del_l=$dtc1['jumdel'];
   mysqli_free_result($cekd);unset($dtc1);
@@ -57,7 +63,7 @@ if(($huta+$piut+$del_l)==0) {?>
 </div>
 
 <?php 
- if ($del_l>0 && $_SESSION['kodepemakai']=='2'){
+ if ($del_l>0 && ($oto_sess=='2' || $oto_sess=='3')){
   ?>
    <table class="hrf_res3" style="width: 100%;border:none;overflow:auto">
      <tr >

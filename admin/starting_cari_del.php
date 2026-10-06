@@ -8,8 +8,16 @@
     <?php
     include "config.php";
     session_start();
-    $kd_toko=$_SESSION['id_toko']; 
+    $kd_toko=$_SESSION['id_toko'];
+    $oto_sess = isset($_SESSION['kodepemakai']) ? trim($_SESSION['kodepemakai']) : '';
     $condel=opendtcek();
+    $filter_toko = '';
+    if($oto_sess=='3'){
+      $kd_toko_esc = mysqli_real_escape_string($condel, $kd_toko);
+      $filter_toko = " AND file_log.kd_toko='$kd_toko_esc' ";
+    } elseif($oto_sess!='2'){
+      $filter_toko = " AND 1=0 ";
+    }
     $page = (isset($_POST['page']))? $_POST['page'] : 1;
     $limit = 5; // Jumlah data per halamannya
     $limit_start = ($page - 1) * $limit;
@@ -21,20 +29,20 @@
       if ($params=="") {  
         $sql=mysqli_query($condel,"SELECT * FROM file_log
           LEFT JOIN file_log_cari ON file_log.no_fak=file_log_cari.no_fakjual AND file_log.ket=file_log_cari.ket 
-          WHERE file_log.konfir='T'  
+          WHERE file_log.konfir='T' $filter_toko
           GROUP BY file_log.no_fak,file_log.ket
           ORDER BY file_log.jam ASC LIMIT $limit_start, $limit ");
 
         $sql2=mysqli_query($condel, "SELECT COUNT(*) AS jumlah FROM file_log
-              WHERE konfir='T'");   
+              WHERE konfir='T' $filter_toko");   
       } else {
         $sql=mysqli_query($condel,"SELECT * FROM file_log
         LEFT JOIN file_log_cari ON file_log.no_fak=file_log_cari.no_fakjual AND file_log.ket=file_log_cari.ket 
-        WHERE file_log.no_fak like '$param' AND file_log.konfir='T' 
+        WHERE file_log.no_fak like '$param' AND file_log.konfir='T' $filter_toko
         GROUP BY file_log.no_fak,file_log.ket
         ORDER BY file_log.jam ASC LIMIT $limit_start, $limit ");  
         
-        $sql2=mysqli_query($condel, "SELECT COUNT(*) AS jumlah FROM file_log WHERE konfir='T' AND no_fak LIKE '$param'");
+        $sql2=mysqli_query($condel, "SELECT COUNT(*) AS jumlah FROM file_log WHERE konfir='T' AND no_fak LIKE '$param' $filter_toko");
       } 
       $get_jumlah = mysqli_fetch_array($sql2);
     }else{ // Jika user belum mengklik tombol search (PROSES TANPA AJAX)

@@ -10,7 +10,7 @@ $cek=mysqli_query($connect,"SELECT * from pemakai where id_user='$id_user'");
 $data=mysqli_fetch_assoc($cek);
 ?>
 <script>
-    if (<?=$data['otoritas']?>=='2'){
+    if (document.getElementById('pilotor')) {
       document.getElementById('pilotor').value="<?=$data['otoritas']?>";
     }
     document.getElementById('id_user').value='<?=mysqli_escape_string($connect,$data['id_user']) ?>';  
