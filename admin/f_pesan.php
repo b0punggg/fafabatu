@@ -15,6 +15,14 @@ ensurePesanTables($connect);
 $kd_toko = isset($_SESSION['id_toko']) ? $_SESSION['id_toko'] : '';
 $no_po_baru = pesanNextNoPo($connect, $kd_toko);
 $tgl_set = isset($_SESSION['tgl_set']) ? $_SESSION['tgl_set'] : date('Y-m-d');
+$opt_kemas = '';
+$qkem = mysqli_query($connect, "SELECT no_urut, nm_sat1 FROM kemas WHERE IFNULL(nm_sat1,'')<>'' AND UPPER(nm_sat1) NOT LIKE '%NONE%' ORDER BY nm_sat1 ASC");
+if ($qkem) {
+  while ($rk = mysqli_fetch_assoc($qkem)) {
+    $opt_kemas .= '<option value="'.htmlspecialchars($rk['no_urut'], ENT_QUOTES, 'UTF-8').'">'.htmlspecialchars($rk['nm_sat1'], ENT_QUOTES, 'UTF-8').'</option>';
+  }
+  mysqli_free_result($qkem);
+}
 ?>
 <div id="main" style="font-size: 10pt;">
   <div class="w3-container w3-card" style="background: linear-gradient(165deg, magenta 0%, yellow 45%, white 85%);position: sticky;top:44px;margin-top: -6px;z-index: 1;">
@@ -58,13 +66,15 @@ $tgl_set = isset($_SESSION['tgl_set']) ? $_SESSION['tgl_set'] : date('Y-m-d');
         </div>
         <label class="mr-2 mb-1"><b>Supplier</b></label>
         <input type="hidden" id="kd_sup">
-        <div class="input-group mb-1 mr-3" style="width:240px">
-          <input id="nm_sup" type="text" class="form-control form-control-sm" style="border:1px solid black" placeholder="ketik supplier" onkeyup="dftsup()">
+        <div class="input-group mb-1 mr-3" style="width:240px;position:relative">
+          <input id="nm_sup" type="text" class="form-control form-control-sm" style="border:1px solid black" placeholder="ketik supplier" onkeyup="dftsup()" autocomplete="off">
           <div class="input-group-append">
             <button type="button" id="btn-nmsup" class="btn btn-sm yz-theme-l4" style="border:1px solid black" onclick="dftsup()"><i class="fa fa-caret-down"></i></button>
           </div>
+          <div id="boxsup" style="display:none;position:absolute;left:0;top:100%;z-index:20;width:100%;min-width:240px">
+            <div id="viewdftsup"></div>
+          </div>
         </div>
-        <div id="boxsup" style="display:none;position:absolute;z-index:2"><div id="viewdftsup"></div></div>
         <label class="mr-2 mb-1"><b>Ket</b></label>
         <input id="ket" type="text" class="form-control form-control-sm mb-1 mr-3" style="border:1px solid black;width:180px">
         <button type="button" class="btn btn-info btn-sm mb-1" onclick="poBaru()"><i class="fa fa-file-o"></i> PO Baru</button>
@@ -85,7 +95,45 @@ $tgl_set = isset($_SESSION['tgl_set']) ? $_SESSION['tgl_set'] : date('Y-m-d');
       <input id="cari_nmbrg" class="form-control form-control-sm mb-1 mr-2" style="font-size:9pt;min-width:200px" placeholder="cari nama / kode barang" onkeypress="if(event.keyCode==13){carilistbrg(1,true)}">
       <button type="button" class="btn btn-primary btn-sm mb-1 mr-2" onclick="carilistbrg(1,true)"><i class="fa fa-search"></i></button>
       <button type="button" class="btn btn-warning btn-sm mb-1 mr-3" onclick="document.getElementById('cari_nmbrg').value='';carilistbrg(1,true)"><i class="fa fa-undo"></i></button>
-      <button type="button" class="btn btn-success btn-sm mb-1" onclick="masukkanKePO()"><i class="fa fa-check"></i> Masukkan ke PO</button>
+      <button type="button" class="btn btn-success btn-sm mb-1 mr-2" onclick="masukkanKePO()"><i class="fa fa-check"></i> Masukkan ke PO</button>
+      <button type="button" class="btn btn-primary btn-sm mb-1" onclick="bukaBarangBaru()"><i class="fa fa-plus"></i> Barang baru</button>
+    </div>
+  </div>
+
+  <div id="fbrgbaru" class="w3-modal hrf_arial" style="padding-top:60px;background-color:rgba(1,1,1,0.3);display:none">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:480px;border-radius:5px;background:linear-gradient(180deg,#FAFAD2 10%,white 90%)">
+      <div style="background:linear-gradient(165deg, darkblue 20%, cyan 60%, white 80%);color:white;padding:6px 10px">&nbsp;<i class="fa fa-plus"></i> Barang baru ke PO</div>
+      <span onclick="document.getElementById('fbrgbaru').style.display='none'" class="w3-display-topright" style="cursor:pointer;margin-top:-3px"><img style="width:108%" src="img/tomexit2.png" alt=""></span>
+      <div class="modal-body" style="padding:14px">
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label"><b>Nama barang</b></label>
+          <div class="col-sm-8">
+            <input id="baru_nm_brg" type="text" class="form-control form-control-sm" style="border:1px solid black" placeholder="nama barang baru">
+          </div>
+        </div>
+        <div class="form-group row" style="margin-top:-8px">
+          <label class="col-sm-4 col-form-label"><b>Satuan</b></label>
+          <div class="col-sm-8">
+            <select id="baru_kd_sat" class="form-control form-control-sm" style="border:1px solid black">
+              <option value="">Pilih satuan</option>
+              <?=$opt_kemas?>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row" style="margin-top:-8px">
+          <label class="col-sm-4 col-form-label"><b>Qty</b></label>
+          <div class="col-sm-8">
+            <input id="baru_qty" type="number" min="0" step="any" class="form-control form-control-sm" style="border:1px solid black" value="1">
+          </div>
+        </div>
+        <div class="form-group row" style="margin-top:-8px">
+          <label class="col-sm-4 col-form-label"><b>Harga beli</b></label>
+          <div class="col-sm-8">
+            <input id="baru_hrg" type="text" class="form-control form-control-sm" style="border:1px solid black" placeholder="opsional, kosong = 0">
+          </div>
+        </div>
+        <button type="button" class="btn btn-success btn-sm" style="width:100%" onclick="simpanBarangBaru()"><i class="fa fa-save"></i> Simpan ke PO</button>
+      </div>
     </div>
   </div>
   <div id="viewlistbrg" style="margin:0 10px"></div>
@@ -188,6 +236,34 @@ function pesanToggleAll(el){
     ceks[i].checked = el.checked;
     pesanCekRow(ceks[i]);
   }
+}
+function bukaBarangBaru(){
+  if (!$("#kd_sup").val()) {
+    if (typeof popnew_error==='function') popnew_error('Pilih supplier dulu'); else alert('Pilih supplier dulu');
+    return;
+  }
+  document.getElementById('fbrgbaru').style.display='block';
+  document.getElementById('baru_nm_brg').focus();
+}
+function simpanBarangBaru(){
+  var sat = document.getElementById('baru_kd_sat');
+  var nmSat = sat.options[sat.selectedIndex] ? sat.options[sat.selectedIndex].text : '';
+  $.ajax({
+    type: 'POST',
+    url: 'f_pesan_brgbaru_act.php',
+    data: {
+      tgl_po: $("#tgl_po").val(),
+      no_po: $("#no_po").val(),
+      kd_sup: $("#kd_sup").val(),
+      ket: $("#ket").val(),
+      nm_brg: $("#baru_nm_brg").val(),
+      kd_sat: $("#baru_kd_sat").val(),
+      nm_sat: nmSat,
+      qty_pesan: $("#baru_qty").val(),
+      hrg_beli: $("#baru_hrg").val()
+    },
+    success: function(data){ $("#viewact").html(data); }
+  });
 }
 function masukkanKePO(){
   if (!$("#kd_sup").val()) {

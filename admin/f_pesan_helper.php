@@ -184,14 +184,63 @@ if (!function_exists('pesanEnsureHeader')) {
   }
 }
 
+if (!function_exists('pesanNextKdBrgBaru')) {
+  function pesanNextKdBrgBaru($connect) {
+    $prefix = 'NEW-'.date('Ymd').'-';
+    $prefix_esc = mysqli_real_escape_string($connect, $prefix);
+    $n = 1;
+    $q = mysqli_query($connect, "SELECT kd_brg FROM mas_brg WHERE kd_brg LIKE '$prefix_esc%' ORDER BY kd_brg DESC LIMIT 1");
+    if ($q && mysqli_num_rows($q) > 0) {
+      $r = mysqli_fetch_assoc($q);
+      $seq = intval(substr($r['kd_brg'], strlen($prefix)));
+      if ($seq > 0) {
+        $n = $seq + 1;
+      }
+      mysqli_free_result($q);
+    } elseif ($q) {
+      mysqli_free_result($q);
+    }
+    return $prefix.str_pad((string)$n, 3, '0', STR_PAD_LEFT);
+  }
+}
+
+if (!function_exists('pesanInsertStubMasBrg')) {
+  function pesanInsertStubMasBrg($connect, $kd_brg, $nm_brg, $kd_sat, $nm_sat, $kd_toko) {
+    $kd_brg_esc = mysqli_real_escape_string($connect, $kd_brg);
+    $nm_brg_esc = mysqli_real_escape_string($connect, $nm_brg);
+    $kd_sat_esc = mysqli_real_escape_string($connect, $kd_sat);
+    $nm_sat_esc = mysqli_real_escape_string($connect, $nm_sat);
+    $kd_toko_esc = mysqli_real_escape_string($connect, $kd_toko);
+    $cek = mysqli_query($connect, "SELECT kd_brg FROM mas_brg WHERE kd_brg='$kd_brg_esc' LIMIT 1");
+    if ($cek && mysqli_num_rows($cek) > 0) {
+      mysqli_free_result($cek);
+      return true;
+    }
+    if ($cek) {
+      mysqli_free_result($cek);
+    }
+    $ok = mysqli_query($connect, "INSERT INTO mas_brg (kd_brg,nm_brg,jml_brg,kd_bar,kd_kem1,jum_kem1,hrg_jum1,kd_kem2,jum_kem2,hrg_jum2,kd_kem3,jum_kem3,hrg_jum3,brg_msk,brg_klr,kd_toko,nm_kem1,nm_kem2,nm_kem3) VALUES('$kd_brg_esc','$nm_brg_esc','0','$kd_brg_esc','$kd_sat_esc','1','0','1','0','0','1','0','0','0','0','$kd_toko_esc','$nm_sat_esc','','')");
+    if (!$ok) {
+      $ok = mysqli_query($connect, "INSERT INTO mas_brg VALUES('','$kd_brg_esc','$nm_brg_esc','0','$kd_brg_esc','$kd_sat_esc','1','0','1','0','0','1','0','0','0','0','$kd_toko_esc','$nm_sat_esc','','','','','','')");
+    }
+    return (bool)$ok;
+  }
+}
+
 if (!function_exists('pesanUpsertItem')) {
-  function pesanUpsertItem($connect, $no_po, $tgl_po, $kd_toko, $kd_sup, $kd_brg, $nm_brg, $qty) {
+  function pesanUpsertItem($connect, $no_po, $tgl_po, $kd_toko, $kd_sup, $kd_brg, $nm_brg, $qty, $hrg_override = null, $kd_sat_override = '') {
     if ($qty <= 0) {
       $qty = 1;
     }
     $last = pesanLastHargaBeli($connect, $kd_brg, $kd_toko);
     $hrg = floatval($last['hrg_beli']);
+    if ($hrg_override !== null && $hrg_override !== '') {
+      $hrg = floatval($hrg_override);
+    }
     $kd_sat = $last['kd_sat'];
+    if ($kd_sat_override !== '') {
+      $kd_sat = $kd_sat_override;
+    }
     $jumlah = round($qty * $hrg, 2);
 
     $no_po_esc = mysqli_real_escape_string($connect, $no_po);
