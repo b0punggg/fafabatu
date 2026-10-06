@@ -16,6 +16,8 @@ $is_admin = (isset($_SESSION['kodepemakai']) && $_SESSION['kodepemakai'] == '2')
 $connect = opendtcek();
 $brand_filter = sanitizeReportBrandFilter($connect, isset($_POST['kd_brand']) ? $_POST['kd_brand'] : '');
 $brand_sql = ($brand_filter === '') ? '' : " AND UPPER(mas_brg.nm_brg) LIKE UPPER('%$brand_filter%') ";
+$kd_sup = isset($_POST['kd_sup']) ? mysqli_real_escape_string($connect, trim($_POST['kd_sup'])) : '';
+$sup_sql = ($kd_sup === '') ? '' : " AND beli_brg.kd_sup='$kd_sup' ";
 
 // Pastikan tabel persediaan_bulan ada
 $create_table = "CREATE TABLE IF NOT EXISTS `persediaan_bulan` (
@@ -136,7 +138,7 @@ if($filter_bulan_tahun == 0){
       LEFT JOIN supplier ON beli_brg.kd_sup = supplier.kd_sup
       LEFT JOIN bag_brg ON beli_brg.id_bag = bag_brg.no_urut
       LEFT JOIN $sql_from_keluar ON klr.kd_brg = beli_brg.kd_brg
-      WHERE $params AND beli_brg.kd_toko='$kd_toko' $tampil_stok1 $brand_sql
+      WHERE $params AND beli_brg.kd_toko='$kd_toko' $tampil_stok1 $brand_sql $sup_sql
       GROUP BY beli_brg.kd_brg
       $having_clause
       ORDER BY mas_brg.nm_brg ASC
@@ -148,7 +150,7 @@ if($filter_bulan_tahun == 0){
       SELECT beli_brg.kd_brg
       FROM beli_brg 
       INNER JOIN mas_brg ON beli_brg.kd_brg = mas_brg.kd_brg AND beli_brg.kd_toko = mas_brg.kd_toko
-      WHERE $params AND beli_brg.kd_toko='$kd_toko' $tampil_stok1 $brand_sql
+      WHERE $params AND beli_brg.kd_toko='$kd_toko' $tampil_stok1 $brand_sql $sup_sql
       GROUP BY beli_brg.kd_brg
       $having_clause
     ) jumlah";
@@ -186,7 +188,7 @@ if($filter_bulan_tahun == 0){
       LEFT JOIN supplier ON beli_brg.kd_sup = supplier.kd_sup
       LEFT JOIN bag_brg ON beli_brg.id_bag = bag_brg.no_urut
       LEFT JOIN $sql_from_keluar ON klr.kd_brg = beli_brg.kd_brg
-      WHERE beli_brg.kd_toko='$kd_toko' $tampil_stok $brand_sql
+      WHERE beli_brg.kd_toko='$kd_toko' $tampil_stok $brand_sql $sup_sql
       GROUP BY beli_brg.kd_brg
       $having_clause
       ORDER BY mas_brg.nm_brg ASC
@@ -198,7 +200,7 @@ if($filter_bulan_tahun == 0){
       SELECT beli_brg.kd_brg
       FROM beli_brg 
       INNER JOIN mas_brg ON beli_brg.kd_brg = mas_brg.kd_brg AND beli_brg.kd_toko = mas_brg.kd_toko
-      WHERE beli_brg.kd_toko='$kd_toko' $tampil_stok $brand_sql
+      WHERE beli_brg.kd_toko='$kd_toko' $tampil_stok $brand_sql $sup_sql
       GROUP BY beli_brg.kd_brg
       $having_clause
     ) jumlah";
@@ -218,10 +220,10 @@ if($filter_bulan_tahun == 0){
   // Filter berdasarkan bulan dan tahun transaksi pembelian
   // Jika cek_stok_kosong = 1, sertakan stok kosong (stok_jual >= 0), jika tidak hanya stok > 0
   if($cek_stok_kosong == 1){
-    $where_beli = "beli_brg.kd_toko='$kd_toko' AND beli_brg.stok_jual >= 0 AND MONTH(beli_brg.tgl_fak)='$bulan' AND YEAR(beli_brg.tgl_fak)='$tahun'";
+    $where_beli = "beli_brg.kd_toko='$kd_toko' AND beli_brg.stok_jual >= 0 AND MONTH(beli_brg.tgl_fak)='$bulan' AND YEAR(beli_brg.tgl_fak)='$tahun'".$sup_sql;
     $having_clause = "HAVING stok_juals >= 0";
   } else {
-    $where_beli = "beli_brg.kd_toko='$kd_toko' AND beli_brg.stok_jual > 0 AND MONTH(beli_brg.tgl_fak)='$bulan' AND YEAR(beli_brg.tgl_fak)='$tahun'";
+    $where_beli = "beli_brg.kd_toko='$kd_toko' AND beli_brg.stok_jual > 0 AND MONTH(beli_brg.tgl_fak)='$bulan' AND YEAR(beli_brg.tgl_fak)='$tahun'".$sup_sql;
     $having_clause = "HAVING stok_juals > 0";
   }
 

@@ -48,6 +48,20 @@ $stok  = isset($_GET['stok']) ? (int)$_GET['stok'] : 0; // 1 = sertakan stok kos
 $brand_filter = sanitizeReportBrandFilter($connect, isset($_GET['brand']) ? $_GET['brand'] : '');
 $brand_sql = ($brand_filter === '') ? '' : " AND UPPER(m.nm_brg) LIKE UPPER('%$brand_filter%') ";
 $brand_text = ($brand_filter === '') ? 'SEMUA' : $brand_filter;
+$kd_sup = isset($_GET['kd_sup']) ? mysqli_real_escape_string($connect, trim($_GET['kd_sup'])) : '';
+$sup_sql = ($kd_sup === '') ? '' : " AND beli_brg.kd_sup='$kd_sup' ";
+$sup_text = 'SEMUA';
+if($kd_sup !== ''){
+  $qsn = mysqli_query($connect, "SELECT nm_sup FROM supplier WHERE kd_sup='$kd_sup' LIMIT 1");
+  if($qsn && mysqli_num_rows($qsn) > 0){
+    $rsn = mysqli_fetch_assoc($qsn);
+    $sup_text = $rsn['nm_sup'];
+    mysqli_free_result($qsn);
+  } else {
+    $sup_text = $kd_sup;
+    if($qsn){ mysqli_free_result($qsn); }
+  }
+}
 
 if($semua != 1 && ($bulan=='' || $tahun=='')){
   exit("Parameter bulan/tahun tidak lengkap. Atau gunakan opsi Cetak semua data.");
@@ -110,7 +124,7 @@ if($semua == 1){
       AVG(beli_brg.hrg_beli) AS hrg_beli,
       MAX(beli_brg.id_bag) AS id_bag
     FROM beli_brg
-    WHERE beli_brg.kd_toko='$kd_toko' $tampil_stok
+    WHERE beli_brg.kd_toko='$kd_toko' $tampil_stok $sup_sql
     GROUP BY beli_brg.kd_brg
     $having_clause
   ) AS sub
@@ -123,10 +137,10 @@ if($semua == 1){
 } else {
   // Filter per bulan/tahun
   if($stok == 1){
-    $where_beli = "beli_brg.kd_toko='$kd_toko' AND beli_brg.stok_jual >= 0 AND MONTH(beli_brg.tgl_fak)='$bulan' AND YEAR(beli_brg.tgl_fak)='$tahun'";
+    $where_beli = "beli_brg.kd_toko='$kd_toko' AND beli_brg.stok_jual >= 0 AND MONTH(beli_brg.tgl_fak)='$bulan' AND YEAR(beli_brg.tgl_fak)='$tahun'".$sup_sql;
     $having_clause = "HAVING stok_juals >= 0";
   } else {
-    $where_beli = "beli_brg.kd_toko='$kd_toko' AND beli_brg.stok_jual > 0 AND MONTH(beli_brg.tgl_fak)='$bulan' AND YEAR(beli_brg.tgl_fak)='$tahun'";
+    $where_beli = "beli_brg.kd_toko='$kd_toko' AND beli_brg.stok_jual > 0 AND MONTH(beli_brg.tgl_fak)='$bulan' AND YEAR(beli_brg.tgl_fak)='$tahun'".$sup_sql;
     $having_clause = "HAVING stok_juals > 0";
   }
   $sql = "
@@ -201,7 +215,7 @@ if(!$q){
         } 
         ?>
       </h4>
-      <div style="margin-bottom:8px;">Brand: <?php echo htmlspecialchars($brand_text); ?></div>
+      <div style="margin-bottom:8px;">Brand: <?php echo htmlspecialchars($brand_text); ?> &nbsp;|&nbsp; Supplier: <?php echo htmlspecialchars($sup_text); ?></div>
     </div>
 
     <table>

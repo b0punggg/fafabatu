@@ -8,6 +8,14 @@
  $connect=opendtcek();
  $kd_toko=$_SESSION['id_toko'];
  $report_brands = getReportBrandOptions($connect);
+ $list_sup = array();
+ $qsup = mysqli_query($connect, "SELECT kd_sup, nm_sup FROM supplier ORDER BY nm_sup ASC");
+ if($qsup){
+   while($rsup = mysqli_fetch_assoc($qsup)){
+     $list_sup[] = $rsup;
+   }
+   mysqli_free_result($qsup);
+ }
 ?>
 
 <div id="main" style="font-size: 10pt">
@@ -32,6 +40,7 @@
           tahun: $("#tahun").val(),
           cek_stok_kosong: $("#cek_stok_kosong").is(':checked') ? 1 : 0,
           kd_brand: $("#kd_brand").val(),
+          kd_sup: $("#kd_sup").val(),
           filter_bulan_tahun: filterBulanTahunAktif ? 1 : 0, // Flag apakah filter bulan/tahun aktif
           page: page_number,
           search: search
@@ -100,6 +109,11 @@
       document.getElementById('keyktpersediaan').value="";
       document.getElementById('cek_stok_kosong').checked = false;
       document.getElementById('kd_brand').value = "";
+      document.getElementById('kd_sup').value = "";
+      if(window.jQuery && $('#kd_brand').data('select2')){
+        $('#kd_brand').val('').trigger('change');
+        $('#kd_sup').val('').trigger('change');
+      }
       
       // Nonaktifkan flag filter bulan/tahun untuk menampilkan semua data
       filterBulanTahunAktif = false;
@@ -134,13 +148,30 @@
 
   <div class="w3-row" style="background: linear-gradient(565deg, #FFFACD 10%, white 90%);">
     <div class="col-sm-12">
-      <!-- Filter Bulan dan Tahun -->
-      <div class="w3-container w3-margin-top">
-        <div class="row">
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label><b>Bulan</b></label>
-              <select class="form-control hrf_arial" id="bulan" name="bulan" style="border: 1px solid black;font-size: 10pt;">
+      <div class="w3-container" style="padding-top:12px;padding-bottom:10px">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+        <style>
+          #form-filter-persediaan .fp-label{display:block;margin-bottom:4px;font-size:10pt}
+          #form-filter-persediaan .form-control{width:100%;border:1px solid black;font-size:10pt;height:32px}
+          #form-filter-persediaan .fp-row{margin-left:-8px;margin-right:-8px}
+          #form-filter-persediaan .fp-col{padding-left:8px;padding-right:8px;margin-bottom:10px}
+          #form-filter-persediaan .fp-check{margin:0;font-weight:normal;cursor:pointer;font-size:10pt;display:inline-flex;align-items:center}
+          #form-filter-persediaan .fp-check input{margin:0 6px 0 0}
+          #form-filter-persediaan .fp-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+          #form-filter-persediaan .fp-bar{margin-top:2px;padding-top:10px;border-top:1px solid #e6d48a}
+          #form-filter-persediaan .select2-container{width:100% !important}
+          #form-filter-persediaan .select2-container .select2-selection--single{height:32px;border:1px solid #000}
+          #form-filter-persediaan .select2-container--default .select2-selection--single .select2-selection__rendered{line-height:30px;font-size:10pt;padding-left:8px}
+          #form-filter-persediaan .select2-container--default .select2-selection--single .select2-selection__arrow{height:30px}
+          #form-filter-persediaan .select2-container--default .select2-selection--single .select2-selection__placeholder{color:#555}
+          .select2-container--open{z-index:2000}
+          .select2-dropdown{font-size:10pt}
+        </style>
+        <div id="form-filter-persediaan">
+          <div class="row fp-row">
+            <div class="col-xs-6 col-sm-3 fp-col">
+              <label class="fp-label" for="bulan"><b>Bulan</b></label>
+              <select class="form-control hrf_arial" id="bulan" name="bulan">
                 <option value="01">Januari</option>
                 <option value="02">Februari</option>
                 <option value="03">Maret</option>
@@ -155,50 +186,56 @@
                 <option value="12" selected>Desember</option>
               </select>
             </div>
-          </div>
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label><b>Tahun</b></label>
-              <input class="form-control hrf_arial" id="tahun" type="number" name="tahun" value="<?=date('Y')?>" style="border: 1px solid black;font-size: 10pt;">
+            <div class="col-xs-6 col-sm-3 fp-col">
+              <label class="fp-label" for="tahun"><b>Tahun</b></label>
+              <input class="form-control hrf_arial" id="tahun" type="number" name="tahun" value="<?=date('Y')?>">
             </div>
-          </div>
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label><b>Brand</b></label>
-              <select class="form-control hrf_arial" id="kd_brand" name="kd_brand" style="border: 1px solid black;font-size: 10pt;">
+            <div class="col-xs-6 col-sm-3 fp-col">
+              <label class="fp-label" for="kd_brand"><b>Brand</b></label>
+              <select class="form-control hrf_arial" id="kd_brand" name="kd_brand" data-placeholder="SEMUA">
                 <option value="">SEMUA</option>
                 <?php foreach ($report_brands as $rb): ?>
                 <option value="<?= htmlspecialchars($rb, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($rb, ENT_QUOTES, 'UTF-8') ?></option>
                 <?php endforeach; ?>
               </select>
             </div>
-          </div>
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label>&nbsp;</label><br>
-              <label style="font-weight: normal; cursor: pointer;">
-                <input type="checkbox" id="cek_stok_kosong" name="cek_stok_kosong" value="1" style="margin-right: 5px;">
-                <span style="font-size: 10pt;">Sertakan Stok Kosong</span>
-              </label>
+            <div class="col-xs-6 col-sm-3 fp-col">
+              <label class="fp-label" for="kd_sup"><b>Supplier</b></label>
+              <select class="form-control hrf_arial" id="kd_sup" name="kd_sup" data-placeholder="SEMUA">
+                <option value="">SEMUA</option>
+                <?php foreach ($list_sup as $ls): ?>
+                <option value="<?= htmlspecialchars($ls['kd_sup'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($ls['nm_sup'], ENT_QUOTES, 'UTF-8') ?></option>
+                <?php endforeach; ?>
+              </select>
             </div>
           </div>
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label>&nbsp;</label><br>
-              <button onclick="cariPersediaanBarang()" class="btn btn-success" style="font-size: 10pt;"><i class="fa fa-search"></i> Cari Persediaan Barang</button>
-              <button onclick="kosongkan()" class="btn btn-warning" style="font-size: 10pt;"><i class="fa fa-undo"></i> Reset</button>
-            </div>
-            <div class="col-sm-12 w3-margin-top">
-              <label style="font-weight: normal; cursor: pointer; margin-right: 12px;">
-                <input type="checkbox" id="cek_cetak_semua" name="cek_cetak_semua" value="1" style="margin-right: 5px;">
-                <span style="font-size: 10pt;">Cetak semua data (abaikan bulan & tahun)</span>
+          <div class="row fp-row" style="display:flex;flex-wrap:wrap;align-items:center">
+            <div class="col-xs-12 col-sm-6 fp-col">
+              <label class="fp-check">
+                <input type="checkbox" id="cek_stok_kosong" name="cek_stok_kosong" value="1">
+                Sertakan stok kosong
               </label>
-              <button onclick="cetakPDF()" class="btn btn-danger" style="font-size:10pt">
-                <i class="fa fa-file-pdf-o"></i> Cetak PDF
-              </button>
-              <button onclick="cetakExcel()" class="btn btn-success" style="font-size:10pt">
-                <i class="fa fa-file-excel-o"></i> Export Excel
-              </button>
+            </div>
+            <div class="col-xs-12 col-sm-6 fp-col">
+              <div class="fp-actions" style="justify-content:flex-end">
+                <button type="button" onclick="cariPersediaanBarang()" class="btn btn-success btn-sm"><i class="fa fa-search"></i> Cari Persediaan Barang</button>
+                <button type="button" onclick="kosongkan()" class="btn btn-warning btn-sm"><i class="fa fa-undo"></i> Reset</button>
+              </div>
+            </div>
+          </div>
+          <div class="row fp-row fp-bar" style="display:flex;flex-wrap:wrap;align-items:center">
+            <div class="col-xs-12 col-sm-6 fp-col">
+              <label class="fp-check">
+                <input type="checkbox" id="cek_cetak_semua" name="cek_cetak_semua" value="1">
+                Cetak semua data (abaikan bulan &amp; tahun)
+              </label>
+            </div>
+            <div class="col-xs-12 col-sm-6 fp-col">
+              <div class="fp-actions" style="justify-content:flex-end">
+                <button type="button" onclick="cetakPDF()" class="btn btn-danger btn-sm"><i class="fa fa-file-pdf-o"></i> Cetak PDF</button>
+                <button type="button" onclick="cetakExcel()" class="btn btn-success btn-sm"><i class="fa fa-file-excel-o"></i> Export Excel</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -226,6 +263,7 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
   $(document).ready(function(){
     $(".loader1").fadeOut();
@@ -234,6 +272,20 @@
     var d = new Date();
     $("#bulan").val(("0" + (d.getMonth() + 1)).slice(-2));
     $("#tahun").val(d.getFullYear());
+
+    var sel2opt = {
+      width: '100%',
+      allowClear: true,
+      placeholder: 'SEMUA',
+      language: {
+        noResults: function(){ return 'Tidak ditemukan'; },
+        searching: function(){ return 'Mencari...'; }
+      }
+    };
+    if($.fn.select2){
+      $('#kd_brand').select2(sel2opt);
+      $('#kd_sup').select2(sel2opt);
+    }
   })
   function validasiCetak(){
   var cetakSemua = $("#cek_cetak_semua").is(':checked');
@@ -252,7 +304,8 @@ function cetakPDF(){
   var cetakSemua = $("#cek_cetak_semua").is(':checked') ? 1 : 0;
   var stok = $("#cek_stok_kosong").is(':checked') ? 1 : 0;
   var brand = encodeURIComponent($("#kd_brand").val());
-  var url = "cetak_persediaan_pdf.php?stok="+stok+"&brand="+brand;
+  var kdsup = encodeURIComponent($("#kd_sup").val());
+  var url = "cetak_persediaan_pdf.php?stok="+stok+"&brand="+brand+"&kd_sup="+kdsup;
   if(cetakSemua){
     url += "&semua=1";
   } else {
@@ -266,7 +319,8 @@ function cetakExcel(){
   var cetakSemua = $("#cek_cetak_semua").is(':checked') ? 1 : 0;
   var stok = $("#cek_stok_kosong").is(':checked') ? 1 : 0;
   var brand = encodeURIComponent($("#kd_brand").val());
-  var url = "cetak_persediaan_excel.php?stok="+stok+"&brand="+brand;
+  var kdsup = encodeURIComponent($("#kd_sup").val());
+  var url = "cetak_persediaan_excel.php?stok="+stok+"&brand="+brand+"&kd_sup="+kdsup;
   if(cetakSemua){
     url += "&semua=1";
   } else {
