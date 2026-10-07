@@ -24,10 +24,11 @@ ob_start();
 
     $limit_start = ($page - 1) * $limit;
     // echo '$limit_start='.$limit_start;
-    if($_SESSION['kodepemakai']=='2'){
+    $oto = isset($_SESSION['kodepemakai']) ? trim($_SESSION['kodepemakai']) : '';
+    if($oto === '2' || $oto === '3'){
       $cid='';
     } else{
-      $cid='AND id_user='.$id_user;
+      $cid='AND id_user='.intval($id_user);
     }
     if(isset($_POST['search']) && $_POST['search'] == true){ // Jika ada data search yg 
     	// echo $tgl_fak;
