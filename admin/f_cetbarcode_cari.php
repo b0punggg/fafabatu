@@ -305,7 +305,7 @@
 				<div class="form-check">
 	<input class="form-check-input" type="radio" name="c_kertas" id="c_kertas4" value='70'>
 	<label class="form-check-label" for="c_kertas4">
-		Kertas 70mm (Label 2 Kolom)
+		Printer label 70mm (TSPL, 2 kolom)
 	</label>
 </div>
 				<div>
@@ -329,6 +329,8 @@
               success: function(data) {
                 $('#viewcetakgo').html(data);
 				document.getElementById('pilkertas').style.display='none';
+                var pil = document.querySelector('input[name="c_kertas"]:checked');
+                if (pil && typeof kertasCetak !== 'undefined') { kertasCetak = pil.value; }
               }
           })
           return false;

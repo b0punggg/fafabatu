@@ -24,7 +24,9 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.js"></script>
-<script>   
+<script>
+  var kertasCetak = '<?=isset($_SESSION['kertas']) ? $_SESSION['kertas'] : 'A4'?>';
+   
   function listbrg(page_number, search){
     $.ajax({
       url: 'f_cetbarcode_cari.php', // File tujuan
@@ -115,10 +117,14 @@
     });
   }
 
-  function docek(bcodes){   
+  function docek(bcodes){
+    if (String(kertasCetak) === '70' && String(bcodes) === '2') {
+      window.open('f_cetbarcode_preview.php', 'prevbar', 'width=1100,height=700,scrollbars=yes');
+      return;
+    }
       $.ajax({
-      url: 'f_cetbarcode_cek.php', // File tujuan
-      type: 'POST', // Tentukan type nya POST atau GET
+      url: 'f_cetbarcode_cek.php',
+      type: 'POST',
       data: {bcode:bcodes}, 
       dataType: "json",
       beforeSend: function(e) {
@@ -130,16 +136,33 @@
         $("#viewcekbar").html(response.hasil);
       },
       error: function (xhr, ajaxOptions, thrownError) { // Ketika terjadi error
-        alert(xhr.responseText); // munculkan alert
+        alert(xhr.responseText);
       }
     }); 
+  }
+
+  function cariPrinterLabel(list){
+    var names = [];
+    if (Array.isArray(list)) {
+      for (var i = 0; i < list.length; i++) {
+        names.push(typeof list[i] === 'string' ? list[i] : (list[i].name || ''));
+      }
+    }
+    var kunci = ['4BARCODE', '3B-360', 'XP-360', '360B', 'XPRINTER'];
+    for (var k = 0; k < kunci.length; k++) {
+      for (var n = 0; n < names.length; n++) {
+        if (names[n].toUpperCase().indexOf(kunci[k]) >= 0) return names[n];
+      }
+    }
+    throw new Error('Printer label tidak ditemukan. Yang terpasang: ' + names.join(', ') + '. Pastikan QZ Tray menyala.');
   }
 
   function cetaktspl(){
     $.getJSON('f_cetbarcode_tspl.php', function(res){
       if(res.jumlah == 0){ alert('Belum ada yang dipilih'); return; }
       var p = qz.websocket.isActive() ? Promise.resolve() : qz.websocket.connect();
-      p.then(function(){ return qz.printers.find('XP-360B'); })
+      p.then(function(){ return qz.printers.find(); })
+       .then(function(list){ return cariPrinterLabel(list); })
        .then(function(printer){
           var cfg = qz.configs.create(printer, {
             encoding: 'UTF-8',
@@ -149,7 +172,7 @@
           });
           return qz.print(cfg, [{ type:'raw', format:'command', flavor:'plain', data: res.tspl }]);
        })
-       .then(function(){ console.log('Terkirim'); })
+       .then(function(){ alert('Terkirim ke printer label (' + res.jumlah + ' stiker)'); })
        .catch(function(e){ alert('Gagal cetak: ' + e); });
     }).fail(function(xhr){ alert('Gagal ambil data TSPL: ' + xhr.responseText); });
   }

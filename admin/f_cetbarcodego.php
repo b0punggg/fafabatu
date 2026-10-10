@@ -42,15 +42,15 @@
   $margin_lr = 1;
   $rows_per_page = 5;
   if ($kertas == '70') {
-    $page_w    = 70.1;
-    $page_h    = 87.4;
-    $margin_lr = 1.27;
+    $page_w    = 70;
+    $page_h    = 15;
+    $margin_lr = 1;
     $gap_col   = 2;
-    $gap_row   = 3.05;
+    $gap_row   = 0;
     $lbl_h     = 15;
-    $lbl_w     = 32.78;
+    $lbl_w     = 33;
     $jbar_1d   = 2;
-    $rows_per_page = 5;
+    $rows_per_page = 1;
   }
   $pad_x   = ($lbl_w - $bar_w) / 2;
   $table_w = ($lbl_w * 2) + $gap_col;
@@ -162,7 +162,7 @@
     $it = array(
       'nm' => function_exists('mb_substr') ? mb_substr($data['nm_brg'], 0, 20, 'UTF-8') : substr($data['nm_brg'], 0, 20),
       'kode' => $kd_bar,
-      'harga' => 'Rp '.number_format((int)round($data['hrg_jum1']), 0, ',', '.'),
+      'harga' => 'Rp. '.number_format((int)round($data['hrg_jum1']), 0, ',', '.'),
       'kd_bar' => $kd_bar,
       'bar_type' => $even_num ? 'C128C' : 'C128',
     );
