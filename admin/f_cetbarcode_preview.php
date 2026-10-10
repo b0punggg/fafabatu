@@ -51,20 +51,24 @@ $jumlah = count($items);
       display: flex; flex-direction: row;
       page-break-after: always;
     }
+    .gap { width: 4mm; height: 15mm; flex-shrink: 0; }
     .lbl {
-      width: 34mm; height: 15mm;
-      padding: 0.4mm 1.2mm 0.3mm 1.2mm;
+      width: 33mm; height: 15mm;
+      padding: 0.5mm 1mm 0.4mm 1.5mm;
       display: flex; flex-direction: column; justify-content: flex-start;
+      overflow: hidden;
     }
     .lbl .nm {
-      font-size: 7pt; font-weight: bold; text-align: left;
-      line-height: 1.1; height: 3mm; overflow: hidden; white-space: nowrap;
+      font-size: 6.5pt; font-weight: bold; text-align: left;
+      line-height: 1.05; height: 2.8mm; overflow: hidden; white-space: nowrap;
     }
-    .lbl svg { width: 32mm; height: 8mm; display: block; }
+    .lbl svg { width: 28mm; height: 7.5mm; display: block; max-width: 28mm; }
     .lbl .bot {
-      display: flex; justify-content: space-between;
-      font-size: 6pt; font-weight: bold; line-height: 1.1;
+      width: 28mm;
+      display: flex; justify-content: space-between; gap: 1mm;
+      font-size: 5.5pt; font-weight: bold; line-height: 1.1;
     }
+    .lbl .bot span { white-space: nowrap; overflow: hidden; }
     @media print {
       .toolbar { display: none; }
       body { background: #fff; }
@@ -85,7 +89,7 @@ $jumlah = count($items);
       <p style="color:#fff">Belum ada yang dipilih.</p>
     <?php } foreach ($rows as $row) { ?>
       <div class="sheet">
-        <?php foreach ($row as $it) { ?>
+        <?php foreach ($row as $i => $it) { if ($i > 0) { echo '<div class="gap"></div>'; } ?>
         <div class="lbl">
           <div class="nm"><?=htmlspecialchars($it['nm'])?></div>
           <svg class="bc" data-val="<?=htmlspecialchars($it['bar'], ENT_QUOTES)?>"></svg>
@@ -132,7 +136,7 @@ document.querySelectorAll('svg.bc').forEach(function(el){
   var v = el.getAttribute('data-val') || '';
   if (!v) return;
   try {
-    JsBarcode(el, v, { format:'CODE128', displayValue:false, height:32, width:1.1, margin:0 });
+    JsBarcode(el, v, { format:'CODE128', displayValue:false, height:28, width:0.85, margin:0 });
   } catch (e) {}
 });
 </script>

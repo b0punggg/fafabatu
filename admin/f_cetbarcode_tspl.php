@@ -15,12 +15,16 @@ function tspl_label($ox, $nm, $bar, $kode, $harga)
     $bar   = tspl_esc($bar);
     $kode  = tspl_esc($kode);
     $harga = tspl_esc($harga);
-    $x     = $ox + 30;
-    $xh    = $ox + 175;
+    $x     = $ox + 16;
+    $lab   = 248;
+    $xh    = $ox + $lab - (strlen($harga) * 8);
+    if ($xh < $x + 90) {
+        $xh = $x + 90;
+    }
     $cmd   = 'TEXT '.$x.',2,"1",0,1,1,"'.$nm."\"\r\n";
-    $cmd  .= 'BARCODE '.$x.',16,"128",72,0,0,2,2,"'.$bar."\"\r\n";
-    $cmd  .= 'TEXT '.$x.',90,"1",0,1,1,"'.$kode."\"\r\n";
-    $cmd  .= 'TEXT '.$xh.',90,"1",0,1,1,"'.$harga."\"\r\n";
+    $cmd  .= 'BARCODE '.$x.',16,"128",68,0,0,1,2,"'.$bar."\"\r\n";
+    $cmd  .= 'TEXT '.$x.',88,"1",0,1,1,"'.$kode."\"\r\n";
+    $cmd  .= 'TEXT '.$xh.',88,"1",0,1,1,"'.$harga."\"\r\n";
     return $cmd;
 }
 
