@@ -14,7 +14,7 @@
   $lbl_w=33;
   $lbl_h=15;
   $gap_col=2;
-  $gap_row=3;
+  $gap_row=2;
   if($kertas=='A4'){
     $jbar=9;
     $jbar_1d=6;
@@ -31,14 +31,29 @@
     $jbar=2;
     $jbar_1d=2;
   }
-  $bar_w   = 18;
-  $kode_w  = 9;
-  $harga_w = 9;
+  $bar_w   = 22;
+  $kode_w  = 11;
+  $harga_w = 11;
   $lbl_w   = 33;
   $gap_col = 2;
-  $pad_x   = ($lbl_w - $bar_w) / 2;
+  $gap_row = 2;
+  $page_w  = 70;
+  $page_h  = 100;
+  $margin_lr = 1;
   $rows_per_page = 5;
-  $page_h  = 120;
+  if ($kertas == '70') {
+    $page_w    = 70.1;
+    $page_h    = 87.4;
+    $margin_lr = 1.27;
+    $gap_col   = 2;
+    $gap_row   = 3.05;
+    $lbl_h     = 15;
+    $lbl_w     = 32.78;
+    $jbar_1d   = 2;
+    $rows_per_page = 5;
+  }
+  $pad_x   = ($lbl_w - $bar_w) / 2;
+  $table_w = ($lbl_w * 2) + $gap_col;
 
   if (!function_exists('cetak_barcode_img')) {
     function cetak_barcode_img($code, $type)
@@ -112,7 +127,7 @@
     }
 </style>
 <page backtop="0mm" backbottom="0mm" backleft="0mm" backright="0mm">
-  <table cellspacing="0" cellpadding="0" style="width: 68mm;">    
+  <table cellspacing="0" cellpadding="0" style="width: <?=$table_w?>mm;">    
      <?php 
       $i=0;$x=0;
       if(isset($_GET['bcode'])){
@@ -143,11 +158,13 @@
     $copies=(int)$data['copy'];
     if ($copies < 1) { $copies = 1; }
     $kd_bar = (string)$data['kd_bar'];
+    $even_num = preg_match('/^[0-9]+$/', $kd_bar) && (strlen($kd_bar) % 2 === 0);
     $it = array(
-      'nm' => function_exists('mb_substr') ? mb_substr($data['nm_brg'], 0, 14, 'UTF-8') : substr($data['nm_brg'], 0, 14),
-      'kode' => (trim((string)$data['kd_brg']) !== '' ? $data['kd_brg'] : $data['kd_bar']),
+      'nm' => function_exists('mb_substr') ? mb_substr($data['nm_brg'], 0, 20, 'UTF-8') : substr($data['nm_brg'], 0, 20),
+      'kode' => $kd_bar,
       'harga' => 'Rp '.number_format((int)round($data['hrg_jum1']), 0, ',', '.'),
       'kd_bar' => $kd_bar,
+      'bar_type' => $even_num ? 'C128C' : 'C128',
     );
     mysqli_query($concet,"UPDATE mas_brg SET cetak='1' WHERE no_urut='".(int)$data['no_urut']."'");
     for ($z=0; $z < $copies; $z++) { $items[] = $it; }
@@ -157,13 +174,8 @@
   $span_gap = ($jbar_1d * 2) - 1;
   foreach ($pages as $pi => $page_items) {
     if ($pi > 0) {
-      echo '</table></page><page backtop="0mm" backbottom="0mm" backleft="0mm" backright="0mm"><table cellspacing="0" cellpadding="0" style="width: 68mm;">';
+      echo '</table></page><page backtop="0mm" backbottom="0mm" backleft="0mm" backright="0mm"><table cellspacing="0" cellpadding="0" style="width: '.$table_w.'mm;">';
     }
-    echo '<tr>
-      <td style="width:'.$lbl_w.'mm; height:0.1mm; font-size:1px;"></td>
-      <td style="width:'.$gap_col.'mm; height:0.1mm; font-size:1px;"></td>
-      <td style="width:'.$lbl_w.'mm; height:0.1mm; font-size:1px;"></td>
-    </tr>';
     $x = 0;
     $last = count($page_items) - 1;
     foreach ($page_items as $idx => $it) {
@@ -173,22 +185,22 @@
       <td style="width: <?=$lbl_w?>mm; height: <?=$lbl_h?>mm; vertical-align: middle; text-align: center;">
         <table cellspacing="0" cellpadding="0" style="width: <?=$lbl_w?>mm; border-collapse: collapse;">
           <tr>
-            <td style="width: <?=$pad_x?>mm; height: 1.6mm; font-size: 1px; line-height: 1px;"></td>
-            <td colspan="2" style="width: <?=$bar_w?>mm; text-align: left; font-size: 4.5pt; font-weight: bold; height: 1.6mm; line-height: 1.6mm; padding: 0; vertical-align: bottom;"><?=htmlspecialchars($it['nm'])?></td>
-            <td style="width: <?=$pad_x?>mm;"></td>
+            <td style="width: <?=$pad_x?>mm; font-size: 1px;"></td>
+            <td colspan="2" style="width: <?=$bar_w?>mm; text-align: center; font-size: 3.5pt; font-weight: bold; height: 2.8mm; line-height: 2.8mm; padding: 0; vertical-align: bottom;"><?=htmlspecialchars($it['nm'])?></td>
+            <td style="width: <?=$pad_x?>mm; font-size: 1px;"></td>
           </tr>
           <tr>
-            <td style="width: <?=$pad_x?>mm; height: 6.5mm; font-size: 1px; line-height: 1px;"></td>
-            <td colspan="2" style="width: <?=$bar_w?>mm; text-align: left; height: 6.5mm; padding: 0; font-size: 1px; line-height: 1px; vertical-align: top;">
-              <barcode type="C128" value="<?=htmlspecialchars($it['kd_bar'])?>" label="none" style="width: <?=$bar_w?>mm; height: 6.5mm; color: #000000;"></barcode>
+            <td style="width: <?=$pad_x?>mm; font-size: 1px;"></td>
+            <td colspan="2" style="width: <?=$bar_w?>mm; text-align: left; height: 8mm; padding: 0; font-size: 1px; vertical-align: top;">
+              <barcode type="<?=$it['bar_type']?>" value="<?=htmlspecialchars($it['kd_bar'])?>" label="none" style="width: <?=$bar_w?>mm; height: 7.8mm; color: #000000;"></barcode>
             </td>
-            <td style="width: <?=$pad_x?>mm;"></td>
+            <td style="width: <?=$pad_x?>mm; font-size: 1px;"></td>
           </tr>
           <tr>
-            <td style="width: <?=$pad_x?>mm; height: 1.6mm; font-size: 1px; line-height: 1px;"></td>
-            <td style="width: <?=$kode_w?>mm; text-align: left; font-size: 4pt; font-weight: bold; height: 1.6mm; line-height: 1.6mm; padding: 0; vertical-align: top;"><?=htmlspecialchars($it['kode'])?></td>
-            <td style="width: <?=$harga_w?>mm; text-align: right; font-size: 4pt; font-weight: bold; height: 1.6mm; line-height: 1.6mm; padding: 0; vertical-align: top;"><?=htmlspecialchars($it['harga'])?></td>
-            <td style="width: <?=$pad_x?>mm;"></td>
+            <td style="width: <?=$pad_x?>mm; font-size: 1px;"></td>
+            <td style="width: <?=$kode_w?>mm; text-align: left; font-size: 2.5pt; font-weight: bold; height: 2.8mm; line-height: 2.8mm; padding: 0; vertical-align: top;"><?=htmlspecialchars($it['kode'])?></td>
+            <td style="width: <?=$harga_w?>mm; text-align: right; font-size: 3pt; font-weight: bold; height: 2.8mm; line-height: 2.8mm; padding: 0; vertical-align: top;"><?=htmlspecialchars($it['harga'])?></td>
+            <td style="width: <?=$pad_x?>mm; font-size: 1px;"></td>
           </tr>
         </table>
       </td>
@@ -232,7 +244,7 @@
       $html2pdf->pdf->SetAutoPageBreak(false, 0);
     }
     if($kertas=='70'){
-      $html2pdf = new Html2Pdf('P', array(70, $page_h), 'en', true, 'UTF-8', array(0, 0, 0, 0));
+      $html2pdf = new Html2Pdf('P', array($page_w, $page_h), 'en', true, 'UTF-8', array($margin_lr, 0, $margin_lr, 0));
       $html2pdf->pdf->SetAutoPageBreak(false, 0);
     } 
       $html2pdf->pdf->SetDisplayMode('fullpage');

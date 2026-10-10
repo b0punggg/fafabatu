@@ -141,7 +141,12 @@
       var p = qz.websocket.isActive() ? Promise.resolve() : qz.websocket.connect();
       p.then(function(){ return qz.printers.find('XP-360B'); })
        .then(function(printer){
-          var cfg = qz.configs.create(printer);
+          var cfg = qz.configs.create(printer, {
+            encoding: 'UTF-8',
+            rasterize: false,
+            scaleContent: false,
+            altPrinting: false
+          });
           return qz.print(cfg, [{ type:'raw', format:'command', flavor:'plain', data: res.tspl }]);
        })
        .then(function(){ console.log('Terkirim'); })
