@@ -15,16 +15,19 @@ function tspl_label($ox, $nm, $bar, $kode, $harga)
     $bar   = tspl_esc($bar);
     $kode  = tspl_esc($kode);
     $harga = tspl_esc($harga);
-    $x     = $ox + 16;
-    $lab   = 248;
-    $xh    = $ox + $lab - (strlen($harga) * 8);
-    if ($xh < $x + 90) {
-        $xh = $x + 90;
+    $x     = $ox + 24;
+    $hBar  = 56;
+    $yNm   = 14;
+    $yBar  = 26;
+    $yTxt  = $yBar + $hBar;
+    $xh    = $ox + 240 - (strlen($harga) * 8);
+    if ($xh < $x + 80) {
+        $xh = $x + 80;
     }
-    $cmd   = 'TEXT '.$x.',2,"1",0,1,1,"'.$nm."\"\r\n";
-    $cmd  .= 'BARCODE '.$x.',16,"128",68,0,0,1,2,"'.$bar."\"\r\n";
-    $cmd  .= 'TEXT '.$x.',88,"1",0,1,1,"'.$kode."\"\r\n";
-    $cmd  .= 'TEXT '.$xh.',88,"1",0,1,1,"'.$harga."\"\r\n";
+    $cmd   = 'TEXT '.$x.','.$yNm.',"1",0,1,1,"'.$nm."\"\r\n";
+    $cmd  .= 'BARCODE '.$x.','.$yBar.',"128",'.$hBar.',0,0,1,2,"'.$bar."\"\r\n";
+    $cmd  .= 'TEXT '.$x.','.$yTxt.',"1",0,1,2,"'.$kode."\"\r\n";
+    $cmd  .= 'TEXT '.$xh.','.$yTxt.',"1",0,1,2,"'.$harga."\"\r\n";
     return $cmd;
 }
 
@@ -37,7 +40,7 @@ while ($d = mysqli_fetch_assoc($cek)) {
         'nm'    => $d['nm_brg'],
         'bar'   => $d['kd_bar'],
         'kode'  => $d['kd_bar'],
-        'harga' => 'Rp. '.number_format((int) round($d['hrg_jum1']), 0, ',', '.'),
+        'harga' => 'Rp '.number_format((int) round($d['hrg_jum1']), 0, ',', '.'),
     );
     $copies = max(1, (int) $d['copy']);
     for ($z = 0; $z < $copies; $z++) {
@@ -51,8 +54,8 @@ $tspl .= "GAP 3 mm,0\r\n";
 $tspl .= "OFFSET 0 mm\r\n";
 $tspl .= "DIRECTION 1\r\n";
 $tspl .= "REFERENCE 0,0\r\n";
-$tspl .= "DENSITY 10\r\n";
-$tspl .= "SPEED 3\r\n";
+$tspl .= "DENSITY 12\r\n";
+$tspl .= "SPEED 2\r\n";
 
 for ($i = 0; $i < count($labels); $i += 2) {
     $tspl .= "CLS\r\n";
