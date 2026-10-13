@@ -102,7 +102,7 @@ function tspl_draw_label($im, $ox, $nm, $bar, $harga, $black, $font)
     $kode  = tspl_fit_text($bar, $font, 11, 130);
     $harga = tspl_fit_text($harga, $font, 11, 110);
     tspl_text($im, $ox + $pad, 3, 13, $black, $font, $nm);
-    tspl_draw_barcode($im, $ox + $pad, 24, $cellW - $pad * 2, 70, $bar, $black);
+    tspl_draw_barcode($im, $ox + $pad, 22, $cellW - $pad * 2, 72, $bar, $black);
     tspl_text($im, $ox + $pad, 98, 11, $black, $font, $kode);
     tspl_text_right($im, $ox + $cellW - $pad, 98, 11, $black, $font, $harga);
 }
@@ -145,14 +145,17 @@ function tspl_page_hex($left, $right, $font)
     if ($right) {
         tspl_draw_label($im, 280, $right['nm'], $right['bar'], $right['harga'], $black, $font);
     }
+    $rot = imagerotate($im, 180, $white);
+    imagedestroy($im);
+    $im = $rot;
     $bmp = tspl_bitmap_hex($im);
     imagedestroy($im);
     $cmd  = "SIZE 70 mm,15 mm\r\n";
     $cmd .= "GAP 3 mm,0\r\n";
     $cmd .= "DIRECTION 0\r\n";
     $cmd .= "REFERENCE 0,0\r\n";
-    $cmd .= "DENSITY 15\r\n";
-    $cmd .= "SPEED 2\r\n";
+    $cmd .= "DENSITY 8\r\n";
+    $cmd .= "SPEED 4\r\n";
     $cmd .= "CLS\r\n";
     $cmd .= 'BITMAP 0,0,70,'.$H.",0,";
     return strtoupper(bin2hex($cmd)).$bmp.strtoupper(bin2hex("\r\nPRINT 1,1\r\n"));
