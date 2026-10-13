@@ -54,19 +54,19 @@ $jumlah = count($items);
     .gap { width: 2mm; height: 15mm; flex-shrink: 0; }
     .lbl {
       width: 33mm; height: 15mm;
-      padding: 0.4mm 2mm 0.4mm 2mm;
+      padding: 1.2mm 2.8mm 1.2mm 2.8mm;
       display: flex; flex-direction: column; justify-content: flex-start;
       overflow: hidden; box-sizing: border-box;
     }
     .lbl .nm {
-      font-size: 8pt; font-weight: bold; text-align: left;
-      line-height: 1; height: 2.8mm; overflow: hidden; white-space: nowrap;
+      font-size: 6.5pt; font-weight: bold; text-align: left;
+      line-height: 1; height: 2.4mm; overflow: hidden; white-space: nowrap;
     }
-    .lbl svg { width: 29mm; height: 8.8mm; display: block; margin: 0 auto; }
+    .lbl svg { width: 24mm; height: 5.2mm; display: block; margin: 0.4mm auto 0.2mm; }
     .lbl .bot {
-      width: 29mm; margin: 0 auto;
+      width: 24mm; margin: 0 auto;
       display: flex; justify-content: space-between;
-      font-size: 6.5pt; font-weight: bold; line-height: 1;
+      font-size: 6pt; font-weight: bold; line-height: 1;
       padding: 0;
     }
     .lbl .bot span { white-space: nowrap; overflow: hidden; }
@@ -127,14 +127,8 @@ function cetakPrinter(){
     return p.then(function(){ return qz.printers.find(); })
       .then(function(list){ return cariPrinterLabel(list); })
       .then(function(printer){
-        var cfg = qz.configs.create(printer, { encoding:'ISO-8859-1', rasterize:false, scaleContent:false, altPrinting:false });
-        var data = [];
-        var pages = res.pages || [];
-        for (var i = 0; i < pages.length; i++) {
-          data.push({ type:'raw', format:'command', flavor:'hex', data: pages[i] });
-        }
-        if (!data.length) throw new Error('Data cetak kosong');
-        return qz.print(cfg, data);
+        var cfg = qz.configs.create(printer, { encoding:'UTF-8', rasterize:false, scaleContent:false, altPrinting:false });
+        return qz.print(cfg, [{ type:'raw', format:'command', flavor:'plain', data: res.tspl }]);
       })
       .then(function(){ alert('Terkirim ke printer label (' + res.jumlah + ' stiker)'); });
   }).catch(function(e){ alert('Gagal cetak: ' + e); });
@@ -143,7 +137,7 @@ document.querySelectorAll('svg.bc').forEach(function(el){
   var v = el.getAttribute('data-val') || '';
   if (!v) return;
   try {
-    JsBarcode(el, v, { format:'CODE128', displayValue:false, height:34, width:1.05, margin:0 });
+    JsBarcode(el, v, { format:'CODE128', displayValue:false, height:20, width:0.9, margin:0 });
   } catch (e) {}
 });
 </script>
