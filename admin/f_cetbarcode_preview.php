@@ -51,7 +51,7 @@ $jumlah = count($items);
       display: flex; flex-direction: row;
       page-break-after: always;
     }
-    .gap { width: 4mm; height: 15mm; flex-shrink: 0; }
+    .gap { width: 2mm; height: 15mm; flex-shrink: 0; }
     .lbl {
       width: 33mm; height: 15mm;
       padding: 0.4mm 2mm 0.4mm 2mm;
