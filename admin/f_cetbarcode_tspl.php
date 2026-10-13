@@ -9,28 +9,25 @@ function tspl_esc($s)
     return str_replace(array('\\', '"', "\r", "\n"), '', (string) $s);
 }
 
-function tspl_label($ox, $nm, $bar, $kode, $harga)
+function tspl_label($ox, $nm, $bar, $harga)
 {
-    $nm    = tspl_esc(function_exists('mb_substr') ? mb_substr($nm, 0, 18, 'UTF-8') : substr($nm, 0, 18));
+    $nm    = tspl_esc(function_exists('mb_substr') ? mb_substr($nm, 0, 16, 'UTF-8') : substr($nm, 0, 16));
     $bar   = tspl_esc($bar);
-    $kode  = tspl_esc(function_exists('mb_substr') ? mb_substr($kode, 0, 13, 'UTF-8') : substr($kode, 0, 13));
     $harga = tspl_esc($harga);
 
-    // 33 mm = 264 titik. Kode/harga Y 78: bawah barcode, di atas zona gap yang samar.
     $xL   = $ox + 32;
     $xBar = $ox + 56;
-    $hBar = 28;
-    $yNm  = 8;
-    $yBar = 22;
-    $yTxt = 78;
+    $hBar = 48;
+    $yNm  = 6;
+    $yHr  = 18;
+    $yBar = 32;
     $xh   = $ox + 228 - (strlen($harga) * 8);
-    if ($xh < $xL + 96) {
-        $xh = $xL + 96;
+    if ($xh < $xL + 80) {
+        $xh = $xL + 80;
     }
 
     $cmd  = 'TEXT '.$xL.','.$yNm.',"1",0,1,1,"'.$nm."\"\r\n";
-    $cmd .= 'TEXT '.$xL.','.$yTxt.',"1",0,1,1,"'.$kode."\"\r\n";
-    $cmd .= 'TEXT '.$xh.','.$yTxt.',"1",0,1,1,"'.$harga."\"\r\n";
+    $cmd .= 'TEXT '.$xh.','.$yHr.',"1",0,1,1,"'.$harga."\"\r\n";
     $cmd .= 'BARCODE '.$xBar.','.$yBar.',"128",'.$hBar.',0,0,1,2,"'.$bar."\"\r\n";
     return $cmd;
 }
@@ -43,7 +40,6 @@ while ($d = mysqli_fetch_assoc($cek)) {
     $item = array(
         'nm'    => $d['nm_brg'],
         'bar'   => (string) $d['kd_bar'],
-        'kode'  => (string) $d['kd_bar'],
         'harga' => 'Rp '.number_format((int) round($d['hrg_jum1']), 0, ',', '.'),
     );
     $copies = max(1, (int) $d['copy']);
@@ -63,9 +59,9 @@ $tspl .= "SPEED 3\r\n";
 
 for ($i = 0; $i < count($labels); $i += 2) {
     $tspl .= "CLS\r\n";
-    $tspl .= tspl_label(0, $labels[$i]['nm'], $labels[$i]['bar'], $labels[$i]['kode'], $labels[$i]['harga']);
+    $tspl .= tspl_label(0, $labels[$i]['nm'], $labels[$i]['bar'], $labels[$i]['harga']);
     if (isset($labels[$i + 1])) {
-        $tspl .= tspl_label(288, $labels[$i + 1]['nm'], $labels[$i + 1]['bar'], $labels[$i + 1]['kode'], $labels[$i + 1]['harga']);
+        $tspl .= tspl_label(288, $labels[$i + 1]['nm'], $labels[$i + 1]['bar'], $labels[$i + 1]['harga']);
     }
     $tspl .= "PRINT 1,1\r\n";
 }

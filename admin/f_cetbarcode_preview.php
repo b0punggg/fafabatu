@@ -54,29 +54,21 @@ $jumlah = count($items);
     .gap { width: 2mm; height: 15mm; flex-shrink: 0; }
     .lbl {
       width: 33mm; height: 15mm;
-      padding: 0.8mm 1.2mm 0.6mm 1.2mm;
+      padding: 0.8mm 1.6mm 0.8mm 1.6mm;
       display: flex; flex-direction: column; justify-content: flex-start;
       overflow: hidden; box-sizing: border-box;
     }
     .lbl .nm {
-      font-size: 5.5pt; font-weight: bold; text-align: left;
-      line-height: 1.1; max-height: 2.6mm; overflow: hidden; white-space: nowrap;
+      font-size: 6pt; font-weight: bold; text-align: left;
+      line-height: 1.1; height: 2.4mm; overflow: hidden; white-space: nowrap;
       text-overflow: ellipsis; width: 100%;
     }
-    .lbl svg { width: 30mm; height: 6mm; display: block; margin: 0.3mm auto 0.4mm; }
-    .lbl .bot {
+    .lbl .hr {
+      font-size: 6pt; font-weight: bold; text-align: right;
+      line-height: 1.1; height: 2.2mm; white-space: nowrap;
       width: 100%;
-      display: flex; align-items: flex-start; gap: 1mm;
-      font-size: 5pt; font-weight: bold; line-height: 1.1;
-      padding: 0;
     }
-    .lbl .bot .kd {
-      flex: 1; min-width: 0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .lbl .bot .hr {
-      flex: 0 0 auto; white-space: nowrap;
-    }
+    .lbl svg { width: 26mm; height: 7.5mm; display: block; margin: 0.4mm auto 0; }
     @media print {
       .toolbar { display: none; }
       body { background: #fff; }
@@ -100,11 +92,8 @@ $jumlah = count($items);
         <?php foreach ($row as $i => $it) { if ($i > 0) { echo '<div class="gap"></div>'; } ?>
         <div class="lbl">
           <div class="nm"><?=htmlspecialchars($it['nm'])?></div>
+          <div class="hr"><?=htmlspecialchars($it['harga'])?></div>
           <svg class="bc" data-val="<?=htmlspecialchars($it['bar'], ENT_QUOTES)?>"></svg>
-          <div class="bot">
-            <span class="kd"><?=htmlspecialchars($it['bar'])?></span>
-            <span class="hr"><?=htmlspecialchars($it['harga'])?></span>
-          </div>
         </div>
         <?php } ?>
       </div>
@@ -144,7 +133,7 @@ document.querySelectorAll('svg.bc').forEach(function(el){
   var v = el.getAttribute('data-val') || '';
   if (!v) return;
   try {
-    JsBarcode(el, v, { format:'CODE128', displayValue:false, height:22, width:1, margin:0 });
+    JsBarcode(el, v, { format:'CODE128', displayValue:false, height:28, width:1, margin:0 });
   } catch (e) {}
 });
 </script>
