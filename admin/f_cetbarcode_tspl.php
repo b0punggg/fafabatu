@@ -13,25 +13,25 @@ function tspl_label($ox, $nm, $bar, $kode, $harga)
 {
     $nm    = tspl_esc(function_exists('mb_substr') ? mb_substr($nm, 0, 18, 'UTF-8') : substr($nm, 0, 18));
     $bar   = tspl_esc($bar);
-    $kode  = tspl_esc(function_exists('mb_substr') ? mb_substr($kode, 0, 12, 'UTF-8') : substr($kode, 0, 12));
+    $kode  = tspl_esc(function_exists('mb_substr') ? mb_substr($kode, 0, 13, 'UTF-8') : substr($kode, 0, 13));
     $harga = tspl_esc($harga);
 
-    // 33 mm = 264 titik. Pinggir 24 titik (~3 mm) supaya tidak kena potongan stiker.
-    $xL   = $ox + 24;
+    // 33 mm = 264 titik. Kode/harga di Y 88: di bawah pita BARCODE (zona yang sudah pernah tercetak).
+    $xL   = $ox + 32;
     $xBar = $ox + 56;
-    $hBar = 40;
+    $hBar = 32;
     $yNm  = 8;
     $yBar = 22;
-    $yTxt = 68;
-    $xh   = $ox + 236 - (strlen($harga) * 8);
-    if ($xh < $xL + 88) {
-        $xh = $xL + 88;
+    $yTxt = 88;
+    $xh   = $ox + 228 - (strlen($harga) * 8);
+    if ($xh < $xL + 96) {
+        $xh = $xL + 96;
     }
 
     $cmd  = 'TEXT '.$xL.','.$yNm.',"1",0,1,1,"'.$nm."\"\r\n";
-    $cmd .= 'BARCODE '.$xBar.','.$yBar.',"128",'.$hBar.',0,0,1,2,"'.$bar."\"\r\n";
     $cmd .= 'TEXT '.$xL.','.$yTxt.',"1",0,1,1,"'.$kode."\"\r\n";
     $cmd .= 'TEXT '.$xh.','.$yTxt.',"1",0,1,1,"'.$harga."\"\r\n";
+    $cmd .= 'BARCODE '.$xBar.','.$yBar.',"128",'.$hBar.',0,0,1,2,"'.$bar."\"\r\n";
     return $cmd;
 }
 
