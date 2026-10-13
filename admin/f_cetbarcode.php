@@ -165,12 +165,18 @@
        .then(function(list){ return cariPrinterLabel(list); })
        .then(function(printer){
           var cfg = qz.configs.create(printer, {
-            encoding: 'UTF-8',
+            encoding: 'ISO-8859-1',
             rasterize: false,
             scaleContent: false,
             altPrinting: false
           });
-          return qz.print(cfg, [{ type:'raw', format:'command', flavor:'plain', data: res.tspl }]);
+          var data = [];
+          var pages = res.pages || [];
+          for (var i = 0; i < pages.length; i++) {
+            data.push({ type:'raw', format:'command', flavor:'hex', data: pages[i] });
+          }
+          if (!data.length) throw new Error('Data cetak kosong');
+          return qz.print(cfg, data);
        })
        .then(function(){ alert('Terkirim ke printer label (' + res.jumlah + ' stiker)'); })
        .catch(function(e){ alert('Gagal cetak: ' + e); });

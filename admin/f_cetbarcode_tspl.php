@@ -9,106 +9,163 @@ if (is_file($barcodeLib) && !class_exists('TCPDFBarcode')) {
     require_once $barcodeLib;
 }
 
-function tspl_esc($s)
+function tspl_font()
 {
-    return str_replace(array('\\', '"', "\r", "\n"), '', (string) $s);
+    $cands = array(
+        'C:\\Windows\\Fonts\\arialbd.ttf',
+        'C:\\Windows\\Fonts\\arial.ttf',
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+        '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
+        '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf',
+    );
+    foreach ($cands as $f) {
+        if (is_file($f)) {
+            return $f;
+        }
+    }
+    return '';
 }
 
-function tspl_code128_bars($x0, $y, $h, $code, $maxW)
+function tspl_fit_text($text, $font, $size, $maxW)
 {
-    if (!class_exists('TCPDFBarcode')) {
-        return array('', 0);
+    $text = (string) $text;
+    if ($font === '' || !function_exists('imagettfbbox')) {
+        return $text;
+    }
+    while (strlen($text) > 1) {
+        $b = imagettfbbox($size, 0, $font, $text);
+        $w = abs($b[2] - $b[0]);
+        if ($w <= $maxW) {
+            break;
+        }
+        $text = substr($text, 0, -1);
+    }
+    return $text;
+}
+
+function tspl_text($im, $x, $y, $size, $color, $font, $text)
+{
+    if ($font !== '' && function_exists('imagettftext')) {
+        imagettftext($im, $size, 0, $x, $y + $size, $color, $font, $text);
+        return;
+    }
+    imagestring($im, 5, $x, $y, $text, $color);
+}
+
+function tspl_text_right($im, $right, $y, $size, $color, $font, $text)
+{
+    if ($font !== '' && function_exists('imagettfbbox')) {
+        $b = imagettfbbox($size, 0, $font, $text);
+        $w = abs($b[2] - $b[0]);
+        imagettftext($im, $size, 0, $right - $w, $y + $size, $color, $font, $text);
+        return;
+    }
+    imagestring($im, 5, $right - (strlen($text) * 9), $y, $text, $color);
+}
+
+function tspl_draw_barcode($im, $x, $y, $maxW, $h, $code, $black)
+{
+    if (!class_exists('TCPDFBarcode') || $code === '') {
+        return;
     }
     try {
         $obj = new TCPDFBarcode($code, 'C128');
         $arr = $obj->getBarcodeArray();
     } catch (Exception $e) {
-        return array('', 0);
+        return;
     }
     if (empty($arr['bcode']) || empty($arr['maxw'])) {
-        return array('', 0);
+        return;
     }
     $units = (int) $arr['maxw'];
-    $mw    = ($units > 0) ? (int) floor($maxW / $units) : 1;
+    $mw    = (int) floor($maxW / $units);
     if ($mw < 1) {
         $mw = 1;
     }
-    if ($mw > 2) {
-        $mw = 2;
-    }
-    $x    = $x0;
-    $run  = 0;
-    $runX = $x0;
-    $cmd  = '';
+    $total = $units * $mw;
+    $cx    = $x + (int) floor(($maxW - $total) / 2);
     foreach ($arr['bcode'] as $b) {
-        $w     = ((int) $b['w']) * $mw;
-        $black = !empty($b['t']);
-        if ($black) {
-            if ($run === 0) {
-                $runX = $x;
-            }
-            $run += $w;
-        } elseif ($run > 0) {
-            $cmd .= 'BAR '.$runX.','.$y.','.$run.','.$h."\r\n";
-            $run = 0;
+        $w = ((int) $b['w']) * $mw;
+        if (!empty($b['t'])) {
+            imagefilledrectangle($im, $cx, $y, $cx + $w - 1, $y + $h - 1, $black);
         }
-        $x += $w;
+        $cx += $w;
     }
-    if ($run > 0) {
-        $cmd .= 'BAR '.$runX.','.$y.','.$run.','.$h."\r\n";
-    }
-    return array($cmd, $x - $x0);
 }
 
-function tspl_label($ox, $nm, $bar, $kode, $harga)
+function tspl_draw_label($im, $ox, $nm, $bar, $harga, $black, $font)
 {
-    $nm    = tspl_esc(function_exists('mb_substr') ? mb_substr($nm, 0, 18, 'UTF-8') : substr($nm, 0, 18));
-    $bar   = tspl_esc($bar);
-    $kode  = tspl_esc(function_exists('mb_substr') ? mb_substr($kode, 0, 14, 'UTF-8') : substr($kode, 0, 14));
-    $harga = tspl_esc($harga);
-
     $cellW = 264;
-    $pad   = 12;
-    $xL    = $ox + $pad;
-    $xR    = $ox + $cellW - $pad;
-    $hBar  = 72;
-    $yNm   = 4;
-    $yBar  = 24;
-    $yTxt  = 98;
+    $pad   = 10;
+    $nm    = tspl_fit_text($nm, $font, 13, $cellW - $pad * 2);
+    $kode  = tspl_fit_text($bar, $font, 11, 130);
+    $harga = tspl_fit_text($harga, $font, 11, 110);
+    tspl_text($im, $ox + $pad, 3, 13, $black, $font, $nm);
+    tspl_draw_barcode($im, $ox + $pad, 24, $cellW - $pad * 2, 70, $bar, $black);
+    tspl_text($im, $ox + $pad, 98, 11, $black, $font, $kode);
+    tspl_text_right($im, $ox + $cellW - $pad, 98, 11, $black, $font, $harga);
+}
 
-    $xh = $xR - (strlen($harga) * 8);
-    if ($xh < $xL + 90) {
-        $xh = $xL + 90;
+function tspl_bitmap_hex($im)
+{
+    $w = imagesx($im);
+    $h = imagesy($im);
+    $bytes = (int) ceil($w / 8);
+    $out = '';
+    for ($y = 0; $y < $h; $y++) {
+        for ($bx = 0; $bx < $bytes; $bx++) {
+            $byte = 0;
+            for ($bit = 0; $bit < 8; $bit++) {
+                $x = $bx * 8 + $bit;
+                if ($x >= $w) {
+                    continue;
+                }
+                $rgb = imagecolorat($im, $x, $y);
+                $r   = ($rgb >> 16) & 0xFF;
+                if ($r < 128) {
+                    $byte |= (0x80 >> $bit);
+                }
+            }
+            $out .= chr($byte);
+        }
     }
+    return strtoupper(bin2hex($out));
+}
 
-    $bars = tspl_code128_bars($xL, $yBar, $hBar, $bar, $cellW - ($pad * 2));
-    $barW = $bars[1];
-    $xBar = $xL;
-    if ($barW > 0 && $barW < ($cellW - $pad * 2)) {
-        $xBar = $ox + (int) floor(($cellW - $barW) / 2);
-        $bars = tspl_code128_bars($xBar, $yBar, $hBar, $bar, $cellW - ($pad * 2));
+function tspl_page_hex($left, $right, $font)
+{
+    $W = 560;
+    $H = 120;
+    $im = imagecreatetruecolor($W, $H);
+    $white = imagecolorallocate($im, 255, 255, 255);
+    $black = imagecolorallocate($im, 0, 0, 0);
+    imagefilledrectangle($im, 0, 0, $W - 1, $H - 1, $white);
+    tspl_draw_label($im, 0, $left['nm'], $left['bar'], $left['harga'], $black, $font);
+    if ($right) {
+        tspl_draw_label($im, 280, $right['nm'], $right['bar'], $right['harga'], $black, $font);
     }
-
-    $cmd  = 'TEXT '.$xL.','.$yNm.',"0",0,1,1,"'.$nm."\"\r\n";
-    if ($bars[0] !== '') {
-        $cmd .= $bars[0];
-    } else {
-        $cmd .= 'BARCODE '.$xBar.','.$yBar.',"128",'.$hBar.',0,0,1,2,"'.$bar."\"\r\n";
-    }
-    $cmd .= 'TEXT '.$xL.','.$yTxt.',"1",0,1,1,"'.$kode."\"\r\n";
-    $cmd .= 'TEXT '.$xh.','.$yTxt.',"1",0,1,1,"'.$harga."\"\r\n";
-    return $cmd;
+    $bmp = tspl_bitmap_hex($im);
+    imagedestroy($im);
+    $cmd  = "SIZE 70 mm,15 mm\r\n";
+    $cmd .= "GAP 3 mm,0\r\n";
+    $cmd .= "DIRECTION 0\r\n";
+    $cmd .= "REFERENCE 0,0\r\n";
+    $cmd .= "DENSITY 15\r\n";
+    $cmd .= "SPEED 2\r\n";
+    $cmd .= "CLS\r\n";
+    $cmd .= 'BITMAP 0,0,70,'.$H.",0,";
+    return strtoupper(bin2hex($cmd)).$bmp.strtoupper(bin2hex("\r\nPRINT 1,1\r\n"));
 }
 
 $uid = mysqli_real_escape_string($concet, $id_user);
 $cek = mysqli_query($concet, "SELECT kd_bar, nm_brg, hrg_jum1, copy, no_urut FROM mas_brg WHERE pilih='1' AND id_user='".$uid."'");
 
-$labels = [];
+$labels = array();
 while ($d = mysqli_fetch_assoc($cek)) {
     $item = array(
         'nm'    => $d['nm_brg'],
-        'bar'   => $d['kd_bar'],
-        'kode'  => $d['kd_bar'],
+        'bar'   => (string) $d['kd_bar'],
         'harga' => 'Rp '.number_format((int) round($d['hrg_jum1']), 0, ',', '.'),
     );
     $copies = max(1, (int) $d['copy']);
@@ -118,23 +175,16 @@ while ($d = mysqli_fetch_assoc($cek)) {
     mysqli_query($concet, "UPDATE mas_brg SET cetak='1' WHERE no_urut='".(int) $d['no_urut']."'");
 }
 
-$tspl  = "SIZE 70 mm,15 mm\r\n";
-$tspl .= "GAP 3 mm,0\r\n";
-$tspl .= "OFFSET 0 mm\r\n";
-$tspl .= "DIRECTION 1\r\n";
-$tspl .= "REFERENCE 0,0\r\n";
-$tspl .= "DENSITY 15\r\n";
-$tspl .= "SPEED 2\r\n";
-
+$font  = tspl_font();
+$pages = array();
 for ($i = 0; $i < count($labels); $i += 2) {
-    $tspl .= "CLS\r\n";
-    $tspl .= tspl_label(0, $labels[$i]['nm'], $labels[$i]['bar'], $labels[$i]['kode'], $labels[$i]['harga']);
-    if (isset($labels[$i + 1])) {
-        $tspl .= tspl_label(280, $labels[$i + 1]['nm'], $labels[$i + 1]['bar'], $labels[$i + 1]['kode'], $labels[$i + 1]['harga']);
-    }
-    $tspl .= "PRINT 1,1\r\n";
+    $right = isset($labels[$i + 1]) ? $labels[$i + 1] : null;
+    $pages[] = tspl_page_hex($labels[$i], $right, $font);
 }
 
 mysqli_close($concet);
 header('Content-Type: application/json');
-echo json_encode(array('tspl' => $tspl, 'jumlah' => count($labels)));
+echo json_encode(array(
+    'jumlah' => count($labels),
+    'pages'  => $pages,
+));
