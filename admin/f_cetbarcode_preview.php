@@ -54,20 +54,20 @@ $jumlah = count($items);
     .gap { width: 4mm; height: 15mm; flex-shrink: 0; }
     .lbl {
       width: 33mm; height: 15mm;
-      padding: 1.5mm 2mm 1.2mm 2.5mm;
-      display: flex; flex-direction: column; justify-content: center;
-      overflow: hidden;
+      padding: 0.4mm 2mm 0.4mm 2mm;
+      display: flex; flex-direction: column; justify-content: flex-start;
+      overflow: hidden; box-sizing: border-box;
     }
     .lbl .nm {
-      font-size: 6.5pt; font-weight: bold; text-align: left;
-      line-height: 1; height: 2.4mm; overflow: hidden; white-space: nowrap;
+      font-size: 8pt; font-weight: bold; text-align: left;
+      line-height: 1; height: 2.8mm; overflow: hidden; white-space: nowrap;
     }
-    .lbl svg { width: 26mm; height: 7.2mm; display: block; margin: 0; }
+    .lbl svg { width: 29mm; height: 8.8mm; display: block; margin: 0 auto; }
     .lbl .bot {
-      width: 26mm;
+      width: 29mm; margin: 0 auto;
       display: flex; justify-content: space-between;
-      font-size: 6pt; font-weight: bold; line-height: 1;
-      margin: 0; padding: 0;
+      font-size: 6.5pt; font-weight: bold; line-height: 1;
+      padding: 0;
     }
     .lbl .bot span { white-space: nowrap; overflow: hidden; }
     @media print {
@@ -137,7 +137,7 @@ document.querySelectorAll('svg.bc').forEach(function(el){
   var v = el.getAttribute('data-val') || '';
   if (!v) return;
   try {
-    JsBarcode(el, v, { format:'CODE128', displayValue:false, height:28, width:0.85, margin:0 });
+    JsBarcode(el, v, { format:'CODE128', displayValue:false, height:34, width:1.05, margin:0 });
   } catch (e) {}
 });
 </script>

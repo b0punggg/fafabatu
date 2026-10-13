@@ -11,23 +11,24 @@ function tspl_esc($s)
 
 function tspl_label($ox, $nm, $bar, $kode, $harga)
 {
-    $nm    = tspl_esc(function_exists('mb_substr') ? mb_substr($nm, 0, 20, 'UTF-8') : substr($nm, 0, 20));
+    $nm    = tspl_esc(function_exists('mb_substr') ? mb_substr($nm, 0, 18, 'UTF-8') : substr($nm, 0, 18));
     $bar   = tspl_esc($bar);
-    $kode  = tspl_esc($kode);
+    $kode  = tspl_esc(function_exists('mb_substr') ? mb_substr($kode, 0, 14, 'UTF-8') : substr($kode, 0, 14));
     $harga = tspl_esc($harga);
-    $x     = $ox + 24;
-    $hBar  = 56;
-    $yNm   = 14;
-    $yBar  = 26;
-    $yTxt  = $yBar + $hBar;
-    $xh    = $ox + 240 - (strlen($harga) * 8);
-    if ($xh < $x + 80) {
-        $xh = $x + 80;
+    // 33 mm = 264 dots. CODE128 1,2 ~145 dots → geser ke tengah stiker.
+    $x     = $ox + 48;
+    $hBar  = 70;
+    $yNm   = 2;
+    $yBar  = 22;
+    $yTxt  = 93;
+    $xh    = $x + 140 - (strlen($harga) * 8);
+    if ($xh < $x + 70) {
+        $xh = $x + 70;
     }
-    $cmd   = 'TEXT '.$x.','.$yNm.',"1",0,1,1,"'.$nm."\"\r\n";
+    $cmd   = 'TEXT '.$x.','.$yNm.',"0",0,1,1,"'.$nm."\"\r\n";
     $cmd  .= 'BARCODE '.$x.','.$yBar.',"128",'.$hBar.',0,0,1,2,"'.$bar."\"\r\n";
-    $cmd  .= 'TEXT '.$x.','.$yTxt.',"1",0,1,2,"'.$kode."\"\r\n";
-    $cmd  .= 'TEXT '.$xh.','.$yTxt.',"1",0,1,2,"'.$harga."\"\r\n";
+    $cmd  .= 'TEXT '.$x.','.$yTxt.',"1",0,1,1,"'.$kode."\"\r\n";
+    $cmd  .= 'TEXT '.$xh.','.$yTxt.',"1",0,1,1,"'.$harga."\"\r\n";
     return $cmd;
 }
 
@@ -54,7 +55,7 @@ $tspl .= "GAP 3 mm,0\r\n";
 $tspl .= "OFFSET 0 mm\r\n";
 $tspl .= "DIRECTION 1\r\n";
 $tspl .= "REFERENCE 0,0\r\n";
-$tspl .= "DENSITY 12\r\n";
+$tspl .= "DENSITY 15\r\n";
 $tspl .= "SPEED 2\r\n";
 
 for ($i = 0; $i < count($labels); $i += 2) {
